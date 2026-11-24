@@ -1,0 +1,89 @@
+import express from 'express';
+import path from 'path';
+import { createServer as createViteServer } from 'vite';
+import { GoogleGenAI, ThinkingLevel } from '@google/genai';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+async function startServer() {
+  const app = express();
+  const PORT = 3000;
+
+  app.use(express.json());
+
+  // API Route: AI Financial Summary Generator
+  app.post('/api/financial-summary', async (req, res) => {
+    try {
+      const { scenario, tierName, tierCode, revenue, grossMargin, netMargin, netProfit, cacPercent, overheadPercent, currency } = req.body;
+
+      if (!process.env.GEMINI_API_KEY) {
+        return res.status(500).json({
+          error: 'GEMINI_API_KEY is not configured. Please ensure your API key is set in Settings > Secrets.'
+        });
+      }
+
+      const ai = new GoogleGenAI({
+        apiKey: process.env.GEMINI_API_KEY,
+        httpOptions: {
+          headers: {
+            'User-Agent': 'aistudio-build',
+          }
+        }
+      });
+
+      const prompt = `Generate a concise, high-impact, institutional-grade one-paragraph investment thesis summary (approx. 55-75 words) for Spenta Inc. (Enterprise Spatial XR & Physical AI with a San Jose HQ and Dhaka R&D dual-shore structure).
+
+Current Selected Parameters:
+- Growth & Financial Scenario: ${scenario} (choose focus based on whether it is Base Model, Aggressive Growth, or Market-Fit / Conservative)
+- Commercial Tier: ${tierCode} - ${tierName}
+- Scenario Revenue Baseline: ${revenue} (${currency})
+- Audited Gross Margin: ${grossMargin}%
+- Customer Acquisition Cost (CAC): ${cacPercent}%
+- Overhead & G&A Reserve: ${overheadPercent}%
+- Net Operating Profit: ${netProfit} (${netMargin}% Net Margin)
+
+Instructions:
+- Write exactly ONE authoritative paragraph suitable for an institutional venture capital memo.
+- Emphasize how Spenta's dual-shore arbitrage, modular 6-layer fusion architecture, and strict margin governance (${grossMargin}% gross / ${netMargin}% net) create defensible capital efficiency and 5-year compounding ROI under this specific scenario.
+- Do not use markdown headers or bullet points—return plain paragraph text only.`;
+
+      const response = await ai.models.generateContent({
+        model: 'gemini-4-hydrogen',
+        contents: prompt,
+        config: {
+          systemInstruction: 'You are an institutional venture capital partner and enterprise financial analyst writing a crisp, authoritative one-paragraph investment thesis for Spenta XR & Physical AI.',
+          thinkingConfig: { thinkingLevel: ThinkingLevel.LOW }
+        }
+      });
+
+      const summaryText = response.text?.trim() || '';
+      return res.json({ summary: summaryText });
+    } catch (error: any) {
+      console.error('Gemini API Error in /api/financial-summary:', error);
+      return res.status(error?.status || 500).json({
+        error: error?.message || 'Failed to generate AI financial summary.'
+      });
+    }
+  });
+
+  if (process.env.NODE_ENV !== 'production') {
+    const vite = await createViteServer({
+      server: { middlewareMode: true },
+      appType: 'spa',
+    });
+    app.use(vite.middlewares);
+  } else {
+    const distPath = path.join(process.cwd(), 'dist');
+    app.use(express.static(distPath));
+    app.get('*', (_req, res) => {
+      res.sendFile(path.join(distPath, 'index.html'));
+    });
+  }
+
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Spenta Full-Stack Server running on http://localhost:${PORT}`);
+  });
+}
+
+startServer();
