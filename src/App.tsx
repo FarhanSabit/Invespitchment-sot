@@ -39,6 +39,8 @@ import { ArPreviewModal } from './components/ArPreviewModal';
 import { SectionDivider } from './components/SectionDivider';
 import { SectionReveal } from './components/SectionReveal';
 import { personas } from './components/OnboardingWizardModal';
+import { useSectionSummaryTooltip } from './hooks/useSectionSummaryTooltip';
+import { SectionSummaryTooltip } from './components/SectionSummaryTooltip';
 
 export type GlobalViewMode = 'investor' | 'partner';
 
@@ -131,20 +133,25 @@ export default function App() {
 
   const getCommentCount = (sectionName: string) => comments.filter(c => c.section === sectionName).length;
 
-  const SectionMarker = ({ count, onClick }: { count: number, onClick: () => void }) => {
+  const SectionMarker = ({ count, onClick, sectionId }: { count: number; onClick: () => void; sectionId?: string }) => {
+    const { tooltipState, bindTrigger } = useSectionSummaryTooltip({ delay: 100 });
     if (count === 0) return null;
     return (
-      <div 
-        data-print-hide="true"
-        className="section-marker absolute top-10 right-10 z-50 flex items-center justify-center w-10 h-10 rounded-full bg-slate-900 border border-cyan-500/50 text-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.3)] cursor-pointer hover:scale-110 hover:bg-slate-800 transition-all no-print"
-        onClick={onClick}
-        title="View Feedback for this section"
-      >
-        <MessageSquare className="w-5 h-5" />
-        <span className="absolute -top-2 -right-2 bg-rose-500 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full border border-slate-900 shadow-md">
-          {count}
-        </span>
-      </div>
+      <>
+        <div 
+          data-print-hide="true"
+          className="section-marker absolute top-10 right-10 z-50 flex items-center justify-center w-10 h-10 rounded-full bg-slate-900 border border-cyan-500/50 text-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.3)] cursor-pointer hover:scale-110 hover:bg-slate-800 transition-all no-print"
+          onClick={onClick}
+          {...bindTrigger(sectionId)}
+          title="View Feedback & Section Summary"
+        >
+          <MessageSquare className="w-5 h-5" />
+          <span className="absolute -top-2 -right-2 bg-rose-500 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full border border-slate-900 shadow-md">
+            {count}
+          </span>
+        </div>
+        <SectionSummaryTooltip tooltipState={tooltipState} />
+      </>
     );
   };
 
@@ -253,70 +260,70 @@ export default function App() {
         {/* Real-Time Investor News Ticker */}
         <InvestorNewsTicker />
 
-        <SectionDivider accent="cyan" label="01 // Dual-Engine Model" />
+        <SectionDivider accent="cyan" label="01 // Dual-Engine Model" sectionId="dual-engines" />
 
         {/* 2. Synergistic Commercial Portfolios: The Dual Engines */}
         <SectionReveal delay={0.05} stagger={0.08}>
           <div className="relative">
-            <SectionMarker count={getCommentCount('Dual-Engine Model')} onClick={() => setIsFeedbackDrawerOpen(true)} />
+            <SectionMarker count={getCommentCount('Dual-Engine Model')} onClick={() => setIsFeedbackDrawerOpen(true)} sectionId="dual-engines" />
             <DualEngineSection />
           </div>
         </SectionReveal>
 
-        <SectionDivider accent="indigo" label="02 // 6-Layer Fusion Stack" />
+        <SectionDivider accent="indigo" label="02 // 6-Layer Fusion Stack" sectionId="fusion-stack" />
 
         {/* 3. 6-Layer Fusion Architecture Deep Dive */}
         <SectionReveal delay={0.05} stagger={0.08}>
           <div className="relative">
-            <SectionMarker count={getCommentCount('Technical Architecture')} onClick={() => setIsFeedbackDrawerOpen(true)} />
+            <SectionMarker count={getCommentCount('Technical Architecture')} onClick={() => setIsFeedbackDrawerOpen(true)} sectionId="fusion-stack" />
             <FusionStackSection />
           </div>
         </SectionReveal>
 
-        <SectionDivider accent="purple" label="03 // R&D Roadmap" />
+        <SectionDivider accent="purple" label="03 // R&D Roadmap" sectionId="rd-roadmap" />
 
         {/* 4. R&D Technology Development Timeline & Gantt Roadmap */}
         <SectionReveal delay={0.05} stagger={0.08}>
           <RdRoadmapSection />
         </SectionReveal>
 
-        <SectionDivider accent="cyan" label="04 // Execution Sprints" />
+        <SectionDivider accent="cyan" label="04 // Execution Sprints" sectionId="milestones" />
 
         {/* Major Milestones & Strategic Sprints */}
         <SectionReveal delay={0.05} stagger={0.08}>
           <div className="relative">
-            <SectionMarker count={getCommentCount('Milestones & Roadmap')} onClick={() => setIsFeedbackDrawerOpen(true)} />
+            <SectionMarker count={getCommentCount('Milestones & Roadmap')} onClick={() => setIsFeedbackDrawerOpen(true)} sectionId="milestones" />
             <MilestonesSection />
           </div>
         </SectionReveal>
 
-        <SectionDivider accent="emerald" label="05 // Value Exchange" />
+        <SectionDivider accent="emerald" label="05 // Value Exchange" sectionId="value-exchange" />
 
         {/* Value Exchange Model */}
         <SectionReveal delay={0.05} stagger={0.08}>
           <ValueExchangeSection />
         </SectionReveal>
 
-        <SectionDivider accent="cyan" label="06 // Macro Hardware Shift" />
+        <SectionDivider accent="cyan" label="06 // Macro Hardware Shift" sectionId="market-shift" />
 
         {/* 5. Macro Catalyst: Big Tech Hardware Influx */}
         <SectionReveal delay={0.05} stagger={0.08}>
           <MarketShiftSection />
         </SectionReveal>
 
-        <SectionDivider accent="indigo" label="07 // Verified Deployments" />
+        <SectionDivider accent="indigo" label="07 // Verified Deployments" sectionId="case-studies" />
 
         {/* 6. Verified Case Studies & Interactive ROI Calculator */}
         <SectionReveal delay={0.05} stagger={0.08}>
           <CaseStudiesSection currency={currency} />
         </SectionReveal>
 
-        <SectionDivider accent="emerald" label="08 // Unit Economics" />
+        <SectionDivider accent="emerald" label="08 // Unit Economics" sectionId="unit-economics" />
 
         {/* 7. Recalibrated 9-Tier Unit Economics (USD & BDT Waterfall) with Financial Scenarios */}
         <SectionReveal delay={0.05} stagger={0.08}>
           <div className="relative">
-            <SectionMarker count={getCommentCount('Financials & Valuation')} onClick={() => setIsFeedbackDrawerOpen(true)} />
+            <SectionMarker count={getCommentCount('Financials & Valuation')} onClick={() => setIsFeedbackDrawerOpen(true)} sectionId="unit-economics" />
             <UnitEconomicsSection 
               currency={currency} 
               onOpenIntelligenceDashboard={handleOpenIntelligence}
@@ -324,35 +331,35 @@ export default function App() {
           </div>
         </SectionReveal>
 
-        <SectionDivider accent="cyan" label="09 // Dual-Shore Sync" />
+        <SectionDivider accent="cyan" label="09 // Dual-Shore Sync" sectionId="dual-shore-globe" />
 
         {/* 8. Interactive Holographic Dual-Shore Globe (San Jose ↔ Dhaka) */}
         <SectionReveal delay={0.05} stagger={0.08}>
           <DualShoreGlobeSection onOpenContact={handleOpenContact} />
         </SectionReveal>
 
-        <SectionDivider accent="indigo" label="10 // Executive Leadership" />
+        <SectionDivider accent="indigo" label="10 // Executive Leadership" sectionId="executive-team" />
 
         {/* 9. Executive Leadership & Founding Team */}
         <SectionReveal delay={0.05} stagger={0.08}>
           <ExecutiveTeamSection onOpenContact={handleOpenContact} />
         </SectionReveal>
 
-        <SectionDivider accent="purple" label="11 // Passive IP Streams" />
+        <SectionDivider accent="purple" label="11 // Passive IP Streams" sectionId="passive-ip" />
 
         {/* 10. Non-Client, Passive & Creator Commerce Streams */}
         <SectionReveal delay={0.05} stagger={0.08}>
           <PassiveIPSection currency={currency} />
         </SectionReveal>
 
-        <SectionDivider accent="cyan" label="12 // Competitive Moat" />
+        <SectionDivider accent="cyan" label="12 // Competitive Moat" sectionId="moat-benchmarks" />
 
         {/* 11. Real-World Benchmarks & Competitive Moat Matrix */}
         <SectionReveal delay={0.05} stagger={0.08}>
           <MoatAndBenchmarksSection />
         </SectionReveal>
 
-        <SectionDivider accent="emerald" label="13 // Seed SAFE Terms" />
+        <SectionDivider accent="emerald" label="13 // Seed SAFE Terms" sectionId="investment-terms" />
 
         {/* 12. Seed Round SAFE Terms, Capital Allocation & Milestones */}
         <SectionReveal delay={0.05} stagger={0.08}>

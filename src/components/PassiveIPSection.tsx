@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from 'motion/react';
 import { NON_CLIENT_STREAMS } from '../data/mockData';
 import { Currency } from '../types';
 import { ArPreviewButton } from './ArPreviewButton';
+import { ReadingTimeIndicator } from './ReadingTimeIndicator';
+import { SECTION_SUMMARIES } from '../data/sectionSummaries';
 import { 
   Box, 
   Gamepad2, 
@@ -35,7 +37,11 @@ export const PassiveIPSection: React.FC<PassiveIPSectionProps> = ({ currency }) 
   const IconComponent = iconMap[activeStream.icon] || Box;
 
   return (
-    <section id="passive-ip" className="py-20 relative bg-[#05070B] overflow-hidden">
+    <section 
+      id="passive-ip" 
+      data-section-summary={SECTION_SUMMARIES['passive-ip']?.summary}
+      className="py-20 relative bg-[#05070B] overflow-hidden"
+    >
       
       {/* Ambient glow */}
       <div className="absolute bottom-0 right-1/4 w-[500px] h-[400px] bg-purple-600/10 blur-[150px] pointer-events-none -z-10" />
@@ -50,12 +56,13 @@ export const PassiveIPSection: React.FC<PassiveIPSectionProps> = ({ currency }) 
           transition={{ duration: 0.6 }}
           className="text-center max-w-3xl mx-auto mb-14 space-y-3"
         >
-          <div className="flex items-center justify-center gap-2 flex-wrap">
+          <div className="flex items-center justify-center gap-3 flex-wrap">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-950/60 border border-purple-500/30 text-xs font-mono text-purple-300">
               <Box className="w-3.5 h-3.5 text-purple-400" />
               <span>DIVERSIFIED HIGH-MARGIN IP // NON-CLIENT CASHFLOW</span>
             </div>
             <ArPreviewButton sectionId="passive-ip" sectionTitle="Passive & Creator IP Engines" modelPreset="spatial-twin" subtitle="3D Asset Royalties & Micro-SaaS" />
+            <ReadingTimeIndicator sectionId="passive-ip" />
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white font-display">
             Passive & Creator Commerce Engines

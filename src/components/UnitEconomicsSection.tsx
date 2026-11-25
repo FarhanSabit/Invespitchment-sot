@@ -22,6 +22,9 @@ import { CopyShareButton } from './CopyShareButton';
 import { ArPreviewButton } from './ArPreviewButton';
 import { RoiSensitivitySlider } from './RoiSensitivitySlider';
 import { FinancialSummaryGenerator } from './FinancialSummaryGenerator';
+import { RoiScenarioComparator } from './RoiScenarioComparator';
+import { ReadingTimeIndicator } from './ReadingTimeIndicator';
+import { SECTION_SUMMARIES } from '../data/sectionSummaries';
 import { 
   Calculator, 
   CheckCircle2, 
@@ -389,7 +392,11 @@ export const UnitEconomicsSection: React.FC<UnitEconomicsSectionProps> = ({
   };
 
   return (
-    <section id="unit-economics" className="py-20 relative bg-[#070A10] border-t border-b border-slate-800/80">
+    <section
+      id="unit-economics"
+      data-section-summary={SECTION_SUMMARIES['unit-economics'].summary}
+      className="py-20 relative bg-[#070A10] border-t border-b border-slate-800/80"
+    >
       
       {/* Background Radial Glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-cyan-600/10 blur-[150px] pointer-events-none -z-10" />
@@ -411,6 +418,7 @@ export const UnitEconomicsSection: React.FC<UnitEconomicsSectionProps> = ({
             </div>
             <CopyShareButton sectionId="unit-economics" sectionTitle="Unit Economics" variant="pill" />
             <ArPreviewButton sectionId="unit-economics" sectionTitle="9-Tier Unit Economics" modelPreset="financial-waterfall" subtitle="Audited 3D Margin Lattice" />
+            <ReadingTimeIndicator sectionId="unit-economics" />
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white font-display">
             Recalibrated 9-Tier Unit Economics
@@ -467,10 +475,19 @@ export const UnitEconomicsSection: React.FC<UnitEconomicsSectionProps> = ({
             <div className="flex items-center gap-3 flex-wrap justify-center">
               {/* Compare Mode Toggle */}
               <button
-                onClick={() => setIsCompareMode(!isCompareMode)}
-                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-mono font-bold transition-all border ${
+                onClick={() => {
+                  const nextState = !isCompareMode;
+                  setIsCompareMode(nextState);
+                  if (nextState) {
+                    const el = document.getElementById('roi-scenario-comparator');
+                    if (el) {
+                      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                  }
+                }}
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-mono font-bold transition-all border cursor-pointer ${
                   isCompareMode 
-                    ? 'bg-indigo-500/20 text-indigo-300 border-indigo-500/50' 
+                    ? 'bg-indigo-500/20 text-indigo-300 border-indigo-500/50 shadow-sm' 
                     : 'bg-slate-900 text-slate-400 border-slate-700 hover:text-slate-200'
                 }`}
               >
@@ -592,6 +609,16 @@ export const UnitEconomicsSection: React.FC<UnitEconomicsSectionProps> = ({
           currency={currency}
           tierName={`${activeTier.code}: ${activeTier.name}`}
         />
+
+        {/* ROI Scenario Comparator: Side-by-side grouped bar charts for Aggressive vs. Conservative trade-offs */}
+        <div id="roi-scenario-comparator" className="scroll-mt-24">
+          <RoiScenarioComparator
+            currency={currency}
+            activeTier={activeTier}
+            initialLeftScenario="aggressive"
+            initialRightScenario="conservative"
+          />
+        </div>
 
         {/* Anomaly Watch Widget */}
         <div className="bg-slate-950/50 border border-slate-800/80 rounded-xl p-4 mb-8 max-w-4xl mx-auto backdrop-blur-md relative overflow-hidden">

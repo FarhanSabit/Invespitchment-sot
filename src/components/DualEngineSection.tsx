@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { CopyShareButton } from './CopyShareButton';
 import { ArPreviewButton } from './ArPreviewButton';
+import { ReadingTimeIndicator } from './ReadingTimeIndicator';
+import { SECTION_SUMMARIES } from '../data/sectionSummaries';
 import { 
   Glasses, 
   Cpu, 
@@ -273,7 +275,11 @@ export const DualEngineSection: React.FC = () => {
   };
 
   return (
-    <section id="dual-engines" className="py-20 relative bg-[#070A10] border-t border-b border-slate-800/80 overflow-hidden">
+    <section
+      id="dual-engines"
+      data-section-summary={SECTION_SUMMARIES['dual-engines'].summary}
+      className="py-20 relative bg-[#070A10] border-t border-b border-slate-800/80 overflow-hidden"
+    >
       
       {/* Background Ambient Glows */}
       <div className="absolute top-1/3 left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-[120px] pointer-events-none -z-10" />
@@ -296,6 +302,7 @@ export const DualEngineSection: React.FC = () => {
             </div>
             <CopyShareButton sectionId="dual-engines" sectionTitle="Dual Commercial Engines" variant="pill" />
             <ArPreviewButton sectionId="dual-engines" sectionTitle="The Dual Engines" modelPreset="spatial-twin" subtitle="Commercial Portfolios" />
+            <ReadingTimeIndicator sectionId="dual-engines" />
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white font-display">
             The Dual-Engine Advantage

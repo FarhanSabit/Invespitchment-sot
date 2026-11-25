@@ -16,6 +16,8 @@ import { CASE_STUDIES } from '../data/mockData';
 import { Currency, USD_TO_BDT_RATE } from '../types';
 import { CopyShareButton } from './CopyShareButton';
 import { ArPreviewButton } from './ArPreviewButton';
+import { ReadingTimeIndicator } from './ReadingTimeIndicator';
+import { SECTION_SUMMARIES } from '../data/sectionSummaries';
 import { 
   CheckCircle2, 
   TrendingUp, 
@@ -126,7 +128,11 @@ export const CaseStudiesSection: React.FC<CaseStudiesSectionProps> = ({ currency
   };
 
   return (
-    <section id="case-studies" className="py-20 relative bg-[#05070B] overflow-hidden">
+    <section
+      id="case-studies"
+      data-section-summary={SECTION_SUMMARIES['case-studies'].summary}
+      className="py-20 relative bg-[#05070B] overflow-hidden"
+    >
       
       {/* Background Gradients */}
       <div className="absolute top-1/3 right-0 w-[500px] h-[500px] bg-emerald-600/10 blur-[150px] pointer-events-none -z-10" />
@@ -149,6 +155,7 @@ export const CaseStudiesSection: React.FC<CaseStudiesSectionProps> = ({ currency
             </div>
             <CopyShareButton sectionId="case-studies" sectionTitle="Case Studies & ROI" variant="pill" />
             <ArPreviewButton sectionId="case-studies" sectionTitle="Enterprise Case Studies" modelPreset="spatial-twin" subtitle="Prime Bank & Samsung Cleanroom SOPs" />
+            <ReadingTimeIndicator sectionId="case-studies" />
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white font-display">
             Cross-Domain Enterprise Case Studies

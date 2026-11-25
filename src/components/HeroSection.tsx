@@ -32,6 +32,8 @@ import { ExecutiveSummaryTable } from './ExecutiveSummaryTable';
 import { ShareBriefingButton } from './ShareBriefingButton';
 import { InvestorPersona } from './OnboardingWizardModal';
 import { FinancialScenario } from './UnitEconomicsSection';
+import { ReadingTimeIndicator } from './ReadingTimeIndicator';
+import { SECTION_SUMMARIES } from '../data/sectionSummaries';
 
 interface HeroSectionProps {
   currency: Currency;
@@ -139,7 +141,11 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   };
 
   return (
-    <section id="hero" className="relative pt-28 pb-20 overflow-hidden bg-grid-pattern">
+    <section
+      id="hero"
+      data-section-summary={SECTION_SUMMARIES.hero.summary}
+      className="relative pt-28 pb-20 overflow-hidden bg-grid-pattern"
+    >
       {/* Background Radial Ambient Glows */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] bg-gradient-to-tr from-cyan-600/15 via-indigo-600/15 to-purple-600/10 blur-[130px] pointer-events-none -z-10" />
       <div className="absolute top-10 right-10 w-[300px] h-[300px] bg-emerald-600/10 blur-[100px] pointer-events-none -z-10" />
@@ -264,6 +270,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                     </>
                   )}
                 </button>
+                <div className="h-4 w-px bg-slate-800 hidden sm:block" />
+                <ReadingTimeIndicator sectionId="hero" />
               </div>
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white font-display leading-[1.1]">
                 {globalViewMode === 'investor' ? (

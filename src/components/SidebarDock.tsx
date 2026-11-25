@@ -10,9 +10,17 @@ import {
   Presentation, 
   ShieldCheck,
   ChevronUp,
-  Mail
+  Mail,
+  GitBranch,
+  ArrowRightLeft,
+  Globe,
+  Users,
+  Shield,
+  BarChart3
 } from 'lucide-react';
 import { InvestorSentimentWidget } from './InvestorSentimentWidget';
+import { useSectionSummaryTooltip } from '../hooks/useSectionSummaryTooltip';
+import { SectionSummaryTooltip } from './SectionSummaryTooltip';
 
 interface SidebarDockProps {
   onOpenPitchDeck: () => void;
@@ -29,6 +37,7 @@ export const SidebarDock: React.FC<SidebarDockProps> = ({
 }) => {
   const [activeSection, setActiveSection] = useState<string>('hero');
   const [scrollProgress, setScrollProgress] = useState<number>(0);
+  const { tooltipState, showTooltip, hideTooltip } = useSectionSummaryTooltip();
 
   const sections = [
     { id: 'hero', label: 'Executive Briefing', icon: Compass },
@@ -99,6 +108,8 @@ export const SidebarDock: React.FC<SidebarDockProps> = ({
             <a
               key={section.id}
               href={`#${section.id}`}
+              onMouseEnter={(e) => showTooltip(section.id, e)}
+              onMouseLeave={hideTooltip}
               className={`group relative p-2 rounded-lg transition-all flex items-center justify-center ${
                 isActive
                   ? 'bg-cyan-500 text-slate-950 font-bold shadow-md shadow-cyan-500/20'
@@ -106,11 +117,6 @@ export const SidebarDock: React.FC<SidebarDockProps> = ({
               }`}
             >
               <Icon className="w-4 h-4" />
-              
-              {/* Tooltip on hover */}
-              <span className="absolute right-full mr-3 px-2.5 py-1 bg-slate-900 border border-slate-800 text-slate-200 text-[11px] font-mono rounded whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity shadow-xl">
-                {section.label}
-              </span>
             </a>
           );
         })}
@@ -179,6 +185,9 @@ export const SidebarDock: React.FC<SidebarDockProps> = ({
         </button>
 
       </div>
+
+      {/* Floating Section Summary Tooltip */}
+      <SectionSummaryTooltip tooltipState={tooltipState} />
     </aside>
   );
 };

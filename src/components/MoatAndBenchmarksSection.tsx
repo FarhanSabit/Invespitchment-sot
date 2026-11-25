@@ -2,6 +2,8 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { COMPETITOR_DATA, STARTUP_BENCHMARKS } from '../data/mockData';
 import { ArPreviewButton } from './ArPreviewButton';
+import { ReadingTimeIndicator } from './ReadingTimeIndicator';
+import { SECTION_SUMMARIES } from '../data/sectionSummaries';
 import { 
   ShieldCheck, 
   TrendingUp, 
@@ -14,7 +16,11 @@ import {
 
 export const MoatAndBenchmarksSection: React.FC = () => {
   return (
-    <section id="moat-benchmarks" className="py-20 relative bg-[#070A10] border-t border-b border-slate-800/80">
+    <section 
+      id="moat-benchmarks" 
+      data-section-summary={SECTION_SUMMARIES['moat-benchmarks']?.summary}
+      className="py-20 relative bg-[#070A10] border-t border-b border-slate-800/80"
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header with Motion */}
@@ -25,12 +31,13 @@ export const MoatAndBenchmarksSection: React.FC = () => {
           transition={{ duration: 0.6 }}
           className="text-center max-w-3xl mx-auto mb-14 space-y-3"
         >
-          <div className="flex items-center justify-center gap-2 flex-wrap">
+          <div className="flex items-center justify-center gap-3 flex-wrap">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/60 border border-cyan-500/30 text-xs font-mono text-cyan-300">
               <ShieldCheck className="w-3.5 h-3.5 text-cyan-400" />
               <span>DEFENSIBILITY & COMPARABLE MARKET PRECEDENTS</span>
             </div>
             <ArPreviewButton sectionId="moat-benchmarks" sectionTitle="Competitive Moat & Security" modelPreset="airgap-vault" subtitle="Air-Gapped Zero Cloud Egress" />
+            <ReadingTimeIndicator sectionId="moat-benchmarks" />
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white font-display">
             Proven Precedents & Competitive Moat

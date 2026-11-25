@@ -2,6 +2,8 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { CopyShareButton } from './CopyShareButton';
 import { ArPreviewButton } from './ArPreviewButton';
+import { ReadingTimeIndicator } from './ReadingTimeIndicator';
+import { SECTION_SUMMARIES } from '../data/sectionSummaries';
 import { 
   Users, 
   Linkedin, 
@@ -91,7 +93,11 @@ export const ExecutiveTeamSection: React.FC<ExecutiveTeamSectionProps> = ({ onOp
   ];
 
   return (
-    <section id="executive-team" className="py-20 relative bg-[#05070B] border-t border-slate-800/80 overflow-hidden">
+    <section
+      id="executive-team"
+      data-section-summary={SECTION_SUMMARIES['executive-team'].summary}
+      className="py-20 relative bg-[#05070B] border-t border-slate-800/80 overflow-hidden"
+    >
       
       {/* Background Ambient Glows */}
       <div className="absolute top-1/3 left-1/4 w-[500px] h-[500px] bg-cyan-600/10 blur-[150px] pointer-events-none -z-10" />
@@ -114,6 +120,7 @@ export const ExecutiveTeamSection: React.FC<ExecutiveTeamSectionProps> = ({ onOp
             </div>
             <CopyShareButton sectionId="executive-team" sectionTitle="Executive Team" variant="pill" />
             <ArPreviewButton sectionId="executive-team" sectionTitle="Executive Leadership" modelPreset="global-orbit" subtitle="San Jose, Sydney & Dhaka Hubs" />
+            <ReadingTimeIndicator sectionId="executive-team" />
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white font-display">
             The Executive Team

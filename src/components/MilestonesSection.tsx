@@ -2,6 +2,8 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { Calendar, CheckCircle2, Clock, Target, ArrowRight } from 'lucide-react';
 import { ArPreviewButton } from './ArPreviewButton';
+import { ReadingTimeIndicator } from './ReadingTimeIndicator';
+import { SECTION_SUMMARIES } from '../data/sectionSummaries';
 
 interface Sprint {
   id: string;
@@ -54,7 +56,11 @@ const SPRINTS: Sprint[] = [
 
 export const MilestonesSection: React.FC = () => {
   return (
-    <section id="milestones" className="py-24 bg-[#0a0f16] relative border-t border-slate-800/50">
+    <section
+      id="milestones"
+      data-section-summary={SECTION_SUMMARIES.milestones.summary}
+      className="py-24 bg-[#0a0f16] relative border-t border-slate-800/50"
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center mb-16">
           <div className="flex items-center justify-center gap-2 flex-wrap mb-4">
@@ -68,6 +74,7 @@ export const MilestonesSection: React.FC = () => {
               MAJOR MILESTONES
             </motion.div>
             <ArPreviewButton sectionId="milestones" sectionTitle="Strategic Sprints & Milestones" modelPreset="fusion-core" subtitle="R&D & Launch Sprints" />
+            <ReadingTimeIndicator sectionId="milestones" />
           </div>
           <h2 className="text-3xl md:text-5xl font-heading font-bold text-white mb-6">
             Strategic Sprints & <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">Execution Tracking</span>

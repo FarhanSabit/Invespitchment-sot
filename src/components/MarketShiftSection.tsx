@@ -17,6 +17,8 @@ import { CopyShareButton } from './CopyShareButton';
 import { ArPreviewButton } from './ArPreviewButton';
 import { MarketPulseCanvas } from './MarketPulseCanvas';
 import { MacroCatalystOverlay } from './MacroCatalystOverlay';
+import { ReadingTimeIndicator } from './ReadingTimeIndicator';
+import { SECTION_SUMMARIES } from '../data/sectionSummaries';
 import { 
   TrendingUp, 
   Glasses, 
@@ -89,7 +91,11 @@ export const MarketShiftSection: React.FC = () => {
   };
 
   return (
-    <section id="market-shift" className="py-20 relative bg-[#070A10] border-t border-b border-slate-800/80 overflow-hidden">
+    <section
+      id="market-shift"
+      data-section-summary={SECTION_SUMMARIES['market-shift'].summary}
+      className="py-20 relative bg-[#070A10] border-t border-b border-slate-800/80 overflow-hidden"
+    >
       
       {/* Abstract High-Tech Market Pulse Video / Canvas Layer */}
       <div className="absolute inset-0 opacity-20 pointer-events-none -z-0">
@@ -122,6 +128,7 @@ export const MarketShiftSection: React.FC = () => {
               <span>Launch Macro Pulse Overlay</span>
               <Maximize2 className="w-3 h-3 ml-0.5 opacity-70" />
             </button>
+            <ReadingTimeIndicator sectionId="market-shift" />
           </div>
 
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white font-display">

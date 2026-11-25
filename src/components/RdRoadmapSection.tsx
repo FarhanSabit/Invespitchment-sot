@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { CopyShareButton } from './CopyShareButton';
 import { ArPreviewButton } from './ArPreviewButton';
+import { ReadingTimeIndicator } from './ReadingTimeIndicator';
+import { SECTION_SUMMARIES } from '../data/sectionSummaries';
 import { 
   GitBranch, 
   Layers, 
@@ -211,7 +213,11 @@ export const RdRoadmapSection: React.FC = () => {
   };
 
   return (
-    <section id="rd-roadmap" className="py-20 relative bg-[#05070B] border-t border-b border-slate-800/80 overflow-hidden">
+    <section
+      id="rd-roadmap"
+      data-section-summary={SECTION_SUMMARIES['rd-roadmap'].summary}
+      className="py-20 relative bg-[#05070B] border-t border-b border-slate-800/80 overflow-hidden"
+    >
       
       {/* Background Cyber Ambient Lights */}
       <div className="absolute top-1/2 left-1/3 w-[600px] h-[400px] bg-cyan-600/10 blur-[160px] pointer-events-none -z-10" />
@@ -233,6 +239,7 @@ export const RdRoadmapSection: React.FC = () => {
             </div>
             <CopyShareButton sectionId="rd-roadmap" sectionTitle="R&D Roadmap" variant="pill" />
             <ArPreviewButton sectionId="rd-roadmap" sectionTitle="R&D Roadmap" modelPreset="fusion-core" subtitle="Technology Horizons 2024–2027" />
+            <ReadingTimeIndicator sectionId="rd-roadmap" />
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white font-display">
             R&D & Technology Maturation Gantt

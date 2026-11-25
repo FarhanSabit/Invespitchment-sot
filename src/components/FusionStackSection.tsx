@@ -4,6 +4,8 @@ import { FUSION_LAYERS } from '../data/mockData';
 import { FusionLayer } from '../types';
 import { CopyShareButton } from './CopyShareButton';
 import { ArPreviewButton } from './ArPreviewButton';
+import { ReadingTimeIndicator } from './ReadingTimeIndicator';
+import { SECTION_SUMMARIES } from '../data/sectionSummaries';
 import { 
   Layers, 
   Database, 
@@ -81,7 +83,11 @@ export const FusionStackSection: React.FC = () => {
   };
 
   return (
-    <section id="fusion-stack" className="py-20 relative bg-[#05070B] overflow-hidden scroll-mt-16">
+    <section
+      id="fusion-stack"
+      data-section-summary={SECTION_SUMMARIES['fusion-stack'].summary}
+      className="py-20 relative bg-[#05070B] overflow-hidden scroll-mt-16"
+    >
       
       {/* Subtle Background Grid & Ambient Glow */}
       <div className="absolute top-1/2 left-0 w-[500px] h-[500px] bg-cyan-600/10 blur-[140px] pointer-events-none -z-10" />
@@ -104,6 +110,7 @@ export const FusionStackSection: React.FC = () => {
             </div>
             <CopyShareButton sectionId="fusion-stack" sectionTitle="6-Layer Fusion Stack" variant="pill" />
             <ArPreviewButton sectionId="fusion-stack" sectionTitle="6-Layer Fusion Architecture" modelPreset="fusion-core" subtitle="Composable Neural Matrix" />
+            <ReadingTimeIndicator sectionId="fusion-stack" />
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white font-display">
             Composable Stack: Sensing to Enterprise Action

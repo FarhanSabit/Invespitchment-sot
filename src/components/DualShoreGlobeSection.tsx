@@ -3,6 +3,8 @@ import * as THREE from 'three';
 import { motion } from 'motion/react';
 import { CopyShareButton } from './CopyShareButton';
 import { ArPreviewButton } from './ArPreviewButton';
+import { ReadingTimeIndicator } from './ReadingTimeIndicator';
+import { SECTION_SUMMARIES } from '../data/sectionSummaries';
 import { 
   Globe, 
   Wifi, 
@@ -260,7 +262,11 @@ export const DualShoreGlobeSection: React.FC<DualShoreGlobeSectionProps> = ({ on
   };
 
   return (
-    <section id="dual-shore-globe" className="py-20 relative bg-[#070A10] border-t border-b border-slate-800/80 overflow-hidden">
+    <section
+      id="dual-shore-globe"
+      data-section-summary={SECTION_SUMMARIES['dual-shore-globe'].summary}
+      className="py-20 relative bg-[#070A10] border-t border-b border-slate-800/80 overflow-hidden"
+    >
       
       {/* Background Radial Glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] bg-cyan-600/10 blur-[180px] pointer-events-none -z-10" />
@@ -282,6 +288,7 @@ export const DualShoreGlobeSection: React.FC<DualShoreGlobeSectionProps> = ({ on
             </div>
             <CopyShareButton sectionId="dual-shore-globe" sectionTitle="Dual-Shore Global Infrastructure" variant="pill" />
             <ArPreviewButton sectionId="dual-shore-globe" sectionTitle="Dual-Shore Global Sync" modelPreset="global-orbit" subtitle="San Jose ↔ Dhaka 3D Orbital Mesh" />
+            <ReadingTimeIndicator sectionId="dual-shore-globe" />
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white font-display">
             San Jose ↔ Dhaka Real-Time Sync

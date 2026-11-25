@@ -10,6 +10,8 @@ import {
 import { Currency, USD_TO_BDT_RATE } from '../types';
 import { CopyShareButton } from './CopyShareButton';
 import { ArPreviewButton } from './ArPreviewButton';
+import { ReadingTimeIndicator } from './ReadingTimeIndicator';
+import { SECTION_SUMMARIES } from '../data/sectionSummaries';
 import { 
   Target, 
   ShieldCheck, 
@@ -81,7 +83,11 @@ export const InvestmentTermsSection: React.FC<InvestmentTermsSectionProps> = ({
   }));
 
   return (
-    <section id="investment-terms" className="py-20 relative bg-[#05070B] overflow-hidden">
+    <section 
+      id="investment-terms" 
+      data-section-summary={SECTION_SUMMARIES['investment-terms']?.summary}
+      className="py-20 relative bg-[#05070B] overflow-hidden"
+    >
       
       {/* Background Glow */}
       <div className="absolute top-1/2 left-1/3 w-[600px] h-[500px] bg-cyan-600/10 blur-[160px] pointer-events-none -z-10" />
@@ -96,13 +102,14 @@ export const InvestmentTermsSection: React.FC<InvestmentTermsSectionProps> = ({
           transition={{ duration: 0.6 }}
           className="text-center max-w-3xl mx-auto mb-14 space-y-3"
         >
-          <div className="flex items-center justify-center gap-2 flex-wrap">
+          <div className="flex items-center justify-center gap-3 flex-wrap">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/60 border border-cyan-500/30 text-xs font-mono text-cyan-300">
               <Target className="w-3.5 h-3.5 text-cyan-400" />
               <span>SEED FINANCING MEMO // YC POST-MONEY SAFE</span>
             </div>
             <CopyShareButton sectionId="investment-terms" sectionTitle="Investment Terms & SAFE" variant="pill" />
             <ArPreviewButton sectionId="investment-terms" sectionTitle="Seed SAFE & Capital Allocation" modelPreset="financial-waterfall" subtitle="$500k @ $4.5M Post-Money Cap" />
+            <ReadingTimeIndicator sectionId="investment-terms" />
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white font-display">
             The Investment Opportunity
