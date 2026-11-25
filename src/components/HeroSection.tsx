@@ -33,6 +33,7 @@ import { ShareBriefingButton } from './ShareBriefingButton';
 import { InvestorPersona } from './OnboardingWizardModal';
 import { FinancialScenario } from './UnitEconomicsSection';
 import { ReadingTimeIndicator } from './ReadingTimeIndicator';
+import { QuickNoteTrigger } from './QuickNoteTrigger';
 import { SECTION_SUMMARIES } from '../data/sectionSummaries';
 
 interface HeroSectionProps {
@@ -272,6 +273,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 </button>
                 <div className="h-4 w-px bg-slate-800 hidden sm:block" />
                 <ReadingTimeIndicator sectionId="hero" />
+                <QuickNoteTrigger sectionId="hero" sectionTitle="Executive Briefing" />
               </div>
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white font-display leading-[1.1]">
                 {globalViewMode === 'investor' ? (

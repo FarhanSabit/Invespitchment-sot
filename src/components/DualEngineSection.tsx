@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { CopyShareButton } from './CopyShareButton';
 import { ArPreviewButton } from './ArPreviewButton';
 import { ReadingTimeIndicator } from './ReadingTimeIndicator';
+import { QuickNoteTrigger } from './QuickNoteTrigger';
 import { SECTION_SUMMARIES } from '../data/sectionSummaries';
 import { 
   Glasses, 
@@ -303,6 +304,7 @@ export const DualEngineSection: React.FC = () => {
             <CopyShareButton sectionId="dual-engines" sectionTitle="Dual Commercial Engines" variant="pill" />
             <ArPreviewButton sectionId="dual-engines" sectionTitle="The Dual Engines" modelPreset="spatial-twin" subtitle="Commercial Portfolios" />
             <ReadingTimeIndicator sectionId="dual-engines" />
+            <QuickNoteTrigger sectionId="dual-engines" sectionTitle="Dual Engines" />
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white font-display">
             The Dual-Engine Advantage

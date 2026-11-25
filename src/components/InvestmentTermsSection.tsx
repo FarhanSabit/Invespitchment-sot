@@ -11,6 +11,7 @@ import { Currency, USD_TO_BDT_RATE } from '../types';
 import { CopyShareButton } from './CopyShareButton';
 import { ArPreviewButton } from './ArPreviewButton';
 import { ReadingTimeIndicator } from './ReadingTimeIndicator';
+import { QuickNoteTrigger } from './QuickNoteTrigger';
 import { SECTION_SUMMARIES } from '../data/sectionSummaries';
 import { 
   Target, 
@@ -110,6 +111,7 @@ export const InvestmentTermsSection: React.FC<InvestmentTermsSectionProps> = ({
             <CopyShareButton sectionId="investment-terms" sectionTitle="Investment Terms & SAFE" variant="pill" />
             <ArPreviewButton sectionId="investment-terms" sectionTitle="Seed SAFE & Capital Allocation" modelPreset="financial-waterfall" subtitle="$500k @ $4.5M Post-Money Cap" />
             <ReadingTimeIndicator sectionId="investment-terms" />
+            <QuickNoteTrigger sectionId="investment-terms" sectionTitle="Investment Terms" />
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white font-display">
             The Investment Opportunity

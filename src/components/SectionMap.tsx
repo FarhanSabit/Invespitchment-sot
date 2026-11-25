@@ -1,7 +1,10 @@
 import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Map, Flame, FileText, Settings, Cpu, Route, Target, ArrowRightLeft, LineChart, Globe, Users, Shield, BarChart3, FileSignature, Pin, PinOff, Search, Focus, Filter, ZoomIn, ZoomOut, Info, CheckCircle2, Circle, MessageSquare, ChevronDown, ChevronUp } from 'lucide-react';
+import { Map, Flame, FileText, Settings, Cpu, Route, Target, ArrowRightLeft, LineChart, Globe, Users, Shield, BarChart3, FileSignature, Pin, PinOff, Search, Focus, Filter, ZoomIn, ZoomOut, Info, CheckCircle2, Circle, MessageSquare, ChevronDown, ChevronUp, FileEdit } from 'lucide-react';
 import { FeedbackComment } from '../types';
+import { useQuickNotes } from '../hooks/useQuickNotes';
+import { NOTE_COLOR_CONFIG } from '../types/quickNotes';
+import { QuickNoteModal } from './QuickNoteModal';
 
 interface Section {
   id: string;
@@ -38,12 +41,16 @@ export const SectionMap: React.FC<{ comments?: FeedbackComment[] }> = ({ comment
   const [isFocusMode, setIsFocusMode] = useState(false);
   const [hoveredSection, setHoveredSection] = useState<string | null>(null);
 
+  // Quick Notes Integration
+  const { allNotes, notesCountBySection, primaryColorBySection } = useQuickNotes();
+  const [noteModalSection, setNoteModalSection] = useState<{ id: string; title: string } | null>(null);
+
   // Search & Filter State
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMapCollapsed, setIsMapCollapsed] = useState(true); // default collapsed on mobile
   const [searchQuery, setSearchQuery] = useState('');
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [statusFilter, setStatusFilter] = useState<'all' | 'completed' | 'pending' | 'feedback'>('all');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'completed' | 'pending' | 'feedback' | 'notes'>('all');
   
   // Legend & Zoom State
   const [isLegendOpen, setIsLegendOpen] = useState(false);
@@ -194,6 +201,11 @@ export const SectionMap: React.FC<{ comments?: FeedbackComment[] }> = ({ comment
     const uniqueKey = isPinnedList ? `pinned-${s.id}` : `unpinned-${s.id}`;
     const isHovered = hoveredSection === uniqueKey;
 
+    const noteCount = notesCountBySection[s.id] || 0;
+    const noteColorKey = primaryColorBySection[s.id] || 'cyan';
+    const noteColorCfg = NOTE_COLOR_CONFIG[noteColorKey];
+    const hasNotes = noteCount > 0;
+
     const hasFeedback = count > 0;
     const isMatched = searchQuery ? s.name.toLowerCase().includes(searchQuery.toLowerCase()) : true;
     const isFocusedOut = isFocusMode && !isPinned && !isActive;
@@ -201,7 +213,8 @@ export const SectionMap: React.FC<{ comments?: FeedbackComment[] }> = ({ comment
       statusFilter === 'all' || 
       (statusFilter === 'completed' && s.status === 'completed') || 
       (statusFilter === 'pending' && s.status === 'pending') || 
-      (statusFilter === 'feedback' && hasFeedback);
+      (statusFilter === 'feedback' && hasFeedback) ||
+      (statusFilter === 'notes' && hasNotes);
 
     const shouldDim = !isMatched || isFocusedOut || !matchesStatusFilter;
 
@@ -260,6 +273,20 @@ export const SectionMap: React.FC<{ comments?: FeedbackComment[] }> = ({ comment
               {count}
             </div>
           )}
+          {/* Quick Notes Color-Coded Marker Badge */}
+          {hasNotes && (
+            <div
+              className="absolute -top-1.5 -left-1.5 rounded-full px-1 shadow-md border border-slate-900 flex items-center justify-center min-w-[15px] h-[15px] text-[8px] font-mono font-bold text-slate-950 z-20 cursor-pointer"
+              style={{ backgroundColor: noteColorCfg.hex, boxShadow: `0 0 8px ${noteColorCfg.hex}` }}
+              title={`${noteCount} Note(s): ${noteColorCfg.category}`}
+              onClick={(e) => {
+                e.stopPropagation();
+                setNoteModalSection({ id: s.id, title: s.name });
+              }}
+            >
+              {noteCount}
+            </div>
+          )}
         </div>
 
         {/* Label */}
@@ -276,6 +303,15 @@ export const SectionMap: React.FC<{ comments?: FeedbackComment[] }> = ({ comment
               {isHeatmapMode && hasFeedback && !shouldDim && (
                 <span className="text-amber-400 font-bold bg-amber-500/20 px-1 rounded text-[9px] leading-none flex items-center justify-center min-w-[14px] h-[14px]">{count}</span>
               )}
+              {hasNotes && !shouldDim && (
+                <span
+                  className="px-1 rounded text-[9px] font-bold leading-none flex items-center justify-center min-w-[14px] h-[14px] text-slate-950 font-mono"
+                  style={{ backgroundColor: noteColorCfg.hex }}
+                  title={`${noteCount} Note(s): ${noteColorCfg.category}`}
+                >
+                  {noteCount}
+                </span>
+              )}
             </motion.div>
           )}
         </AnimatePresence>
@@ -288,7 +324,7 @@ export const SectionMap: React.FC<{ comments?: FeedbackComment[] }> = ({ comment
               animate={{ opacity: 1, x: 0, scale: 1 }}
               exit={{ opacity: 0, x: -10, scale: 0.95 }}
               transition={{ duration: 0.15 }}
-              className="absolute left-full ml-4 top-1/2 -translate-y-1/2 w-56 bg-slate-900/95 backdrop-blur-sm border border-slate-700 rounded-lg p-3 shadow-xl pointer-events-auto cursor-default z-50"
+              className="absolute left-full ml-4 top-1/2 -translate-y-1/2 w-60 bg-slate-900/95 backdrop-blur-sm border border-slate-700 rounded-lg p-3 shadow-xl pointer-events-auto cursor-default z-50"
               onClick={(e) => e.stopPropagation()} 
             >
               <div className="flex justify-between items-start mb-2">
@@ -326,6 +362,47 @@ export const SectionMap: React.FC<{ comments?: FeedbackComment[] }> = ({ comment
                     No active discussions
                   </span>
                 )}
+              </div>
+
+              {/* Quick Notes Preview & Action */}
+              <div className="mt-2 pt-2 border-t border-slate-800 space-y-1.5">
+                <div className="flex items-center justify-between text-[10px] font-mono">
+                  <span className="text-slate-400 flex items-center gap-1.5 font-bold">
+                    <FileEdit className="w-3 h-3 text-cyan-400" />
+                    INVESTOR NOTES
+                  </span>
+                  {hasNotes ? (
+                    <span
+                      className="text-[9px] uppercase font-bold px-1.5 py-0.5 rounded"
+                      style={{ color: noteColorCfg.hex, backgroundColor: `${noteColorCfg.hex}20` }}
+                    >
+                      {noteColorCfg.category}
+                    </span>
+                  ) : (
+                    <span className="text-slate-600 text-[9px]">0 notes</span>
+                  )}
+                </div>
+
+                {hasNotes && (
+                  <div className="space-y-1 max-h-24 overflow-y-auto">
+                    {allNotes.filter((n) => n.sectionId === s.id).slice(0, 2).map((n) => (
+                      <p key={n.id} className="text-[10px] text-slate-300 bg-slate-950/80 p-1.5 rounded border border-slate-800 line-clamp-2">
+                        "{n.text}"
+                      </p>
+                    ))}
+                  </div>
+                )}
+
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setNoteModalSection({ id: s.id, title: s.name });
+                  }}
+                  className="w-full py-1 px-2 rounded bg-slate-800 hover:bg-slate-700 text-[10px] font-mono text-cyan-300 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                >
+                  <FileEdit className="w-3 h-3" />
+                  <span>{hasNotes ? `Manage Notes (${noteCount})` : 'Add Quick Note'}</span>
+                </button>
               </div>
 
               {s.preview && (
@@ -496,6 +573,10 @@ export const SectionMap: React.FC<{ comments?: FeedbackComment[] }> = ({ comment
                       <button onClick={() => setStatusFilter('feedback')} className={`flex items-center gap-2 px-2 py-1.5 rounded text-xs transition-colors ${statusFilter === 'feedback' ? 'bg-amber-500/20 text-amber-400' : 'text-slate-300 hover:bg-slate-800'}`}>
                         <MessageSquare className="w-3.5 h-3.5" /> Active Discussions
                       </button>
+
+                      <button onClick={() => setStatusFilter('notes')} className={`flex items-center gap-2 px-2 py-1.5 rounded text-xs transition-colors ${statusFilter === 'notes' ? 'bg-cyan-500/20 text-cyan-400' : 'text-slate-300 hover:bg-slate-800'}`}>
+                        <FileEdit className="w-3.5 h-3.5 text-cyan-400" /> Has Quick Notes ({allNotes.length})
+                      </button>
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -589,6 +670,15 @@ export const SectionMap: React.FC<{ comments?: FeedbackComment[] }> = ({ comment
         </motion.div>
       </div>
       </div>
+
+      {noteModalSection && (
+        <QuickNoteModal
+          isOpen={!!noteModalSection}
+          onClose={() => setNoteModalSection(null)}
+          sectionId={noteModalSection.id}
+          sectionTitle={noteModalSection.title}
+        />
+      )}
     </>
   );
 };

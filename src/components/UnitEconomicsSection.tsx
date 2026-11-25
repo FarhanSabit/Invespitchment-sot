@@ -23,6 +23,8 @@ import { ArPreviewButton } from './ArPreviewButton';
 import { RoiSensitivitySlider } from './RoiSensitivitySlider';
 import { FinancialSummaryGenerator } from './FinancialSummaryGenerator';
 import { RoiScenarioComparator } from './RoiScenarioComparator';
+import { RoiSensitivityHeatmap } from './RoiSensitivityHeatmap';
+import { QuickNoteTrigger } from './QuickNoteTrigger';
 import { ReadingTimeIndicator } from './ReadingTimeIndicator';
 import { SECTION_SUMMARIES } from '../data/sectionSummaries';
 import { 
@@ -419,6 +421,7 @@ export const UnitEconomicsSection: React.FC<UnitEconomicsSectionProps> = ({
             <CopyShareButton sectionId="unit-economics" sectionTitle="Unit Economics" variant="pill" />
             <ArPreviewButton sectionId="unit-economics" sectionTitle="9-Tier Unit Economics" modelPreset="financial-waterfall" subtitle="Audited 3D Margin Lattice" />
             <ReadingTimeIndicator sectionId="unit-economics" />
+            <QuickNoteTrigger sectionId="unit-economics" sectionTitle="Unit Economics" />
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white font-display">
             Recalibrated 9-Tier Unit Economics
@@ -617,6 +620,15 @@ export const UnitEconomicsSection: React.FC<UnitEconomicsSectionProps> = ({
             activeTier={activeTier}
             initialLeftScenario="aggressive"
             initialRightScenario="conservative"
+          />
+        </div>
+
+        {/* D3.js ROI Sensitivity Heatmap: 2-Variable 5-Year Return Impact & Sweet Spot Visualizer */}
+        <div id="roi-sensitivity-heatmap" className="scroll-mt-24">
+          <RoiSensitivityHeatmap
+            currency={currency}
+            initialCac={currentScen.cacPercent}
+            initialRdBurn={24000}
           />
         </div>
 
