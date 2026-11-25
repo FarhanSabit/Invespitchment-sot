@@ -29,13 +29,20 @@ export const VoiceNavigator: React.FC = () => {
       };
 
       recognitionRef.current.onerror = (event: any) => {
-        console.error('Speech recognition error', event.error);
+        // 'no-speech' and 'aborted' are benign user events (inactivity/dismissal)
+        if (event.error !== 'no-speech' && event.error !== 'aborted') {
+          console.warn('[Spenta Voice Navigator] Speech recognition notice:', event.error);
+        }
         setIsListening(false);
       };
 
       recognitionRef.current.onend = () => {
         if (isListening) {
-          recognitionRef.current.start();
+          try {
+            recognitionRef.current.start();
+          } catch {
+            // Already active or unavailable
+          }
         }
       };
     }

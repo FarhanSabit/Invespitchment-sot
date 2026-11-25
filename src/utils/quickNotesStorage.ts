@@ -48,7 +48,7 @@ export function getStoredQuickNotes(): QuickNote[] {
     const parsed = JSON.parse(raw);
     return Array.isArray(parsed) ? parsed : DEFAULT_INITIAL_NOTES;
   } catch (e) {
-    console.error('Failed to read quick notes from localStorage', e);
+    console.warn('Failed to read quick notes from localStorage', e);
     return DEFAULT_INITIAL_NOTES;
   }
 }
@@ -59,7 +59,7 @@ export function saveStoredQuickNotes(notes: QuickNote[]): void {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
     window.dispatchEvent(new CustomEvent(QUICK_NOTES_CHANGED_EVENT, { detail: notes }));
   } catch (e) {
-    console.error('Failed to save quick notes to localStorage', e);
+    console.warn('Failed to save quick notes to localStorage', e);
   }
 }
 

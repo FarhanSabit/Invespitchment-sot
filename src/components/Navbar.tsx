@@ -80,7 +80,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         setPdfSuccess(true);
         setTimeout(() => setPdfSuccess(false), 3000);
       } catch (err) {
-        console.error('PDF Generation error:', err);
+        console.warn('[Spenta PDF Generator] Error:', err);
       } finally {
         setIsGeneratingPdf(false);
       }

@@ -183,7 +183,7 @@ export async function shareBriefingSession(
         sessionId: session.sessionId,
       };
     } catch (clipboardErr) {
-      console.error('[Spenta Share] Clipboard copy failed:', clipboardErr);
+      console.warn('[Spenta Share] Clipboard copy fallback:', clipboardErr);
     }
   }
 

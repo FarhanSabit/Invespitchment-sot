@@ -19,7 +19,7 @@ export default defineConfig(() => {
       watch: process.env.DISABLE_HMR === 'true' ? null : {},
     },
     build: {
-      chunkSizeWarningLimit: 900,
+      chunkSizeWarningLimit: 1500,
       rollupOptions: {
         output: {
           manualChunks(id) {
@@ -29,7 +29,12 @@ export default defineConfig(() => {
               return 'vendor-charts';
             }
             if (id.includes('/jspdf/') || id.includes('/html2canvas/')) return 'vendor-pdf';
-            if (id.includes('/motion/') || id.includes('/framer-motion/') || id.includes('/lucide-react/')) {
+            if (
+              id.includes('/motion/') ||
+              id.includes('/framer-motion/') ||
+              id.includes('/lucide-react/') ||
+              id.includes('/canvas-confetti/')
+            ) {
               return 'vendor-ui';
             }
             if (id.includes('/react/') || id.includes('/react-dom/')) return 'vendor-react';

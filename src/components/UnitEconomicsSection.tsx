@@ -24,6 +24,7 @@ import { RoiSensitivitySlider } from './RoiSensitivitySlider';
 import { FinancialSummaryGenerator } from './FinancialSummaryGenerator';
 import { RoiScenarioComparator } from './RoiScenarioComparator';
 import { RoiSensitivityHeatmap } from './RoiSensitivityHeatmap';
+import { InvestmentRisksOverlay, RiskWeights, DEFAULT_BEAR_RISK_WEIGHTS } from './InvestmentRisksOverlay';
 import { QuickNoteTrigger } from './QuickNoteTrigger';
 import { ReadingTimeIndicator } from './ReadingTimeIndicator';
 import { SECTION_SUMMARIES } from '../data/sectionSummaries';
@@ -178,6 +179,9 @@ export const UnitEconomicsSection: React.FC<UnitEconomicsSectionProps> = ({
   const [isCompareMode, setIsCompareMode] = useState<boolean>(false);
   const [compareScenario, setCompareScenario] = useState<FinancialScenario>('conservative');
   const [isGeneratingReport, setIsGeneratingReport] = useState<boolean>(false);
+  const [isRiskOverlayOpen, setIsRiskOverlayOpen] = useState<boolean>(false);
+  const [isRiskWeightedMode, setIsRiskWeightedMode] = useState<boolean>(false);
+  const [riskWeights, setRiskWeights] = useState<RiskWeights>(DEFAULT_BEAR_RISK_WEIGHTS);
   const [activeAnomaly, setActiveAnomaly] = useState<AnomalyRisk | null>(null);
   const [audioEnabled, setAudioEnabled] = useState<boolean>(true);
   const [anomalyViewMode, setAnomalyViewMode] = useState<'live' | 'projected'>('live');
@@ -321,16 +325,21 @@ export const UnitEconomicsSection: React.FC<UnitEconomicsSectionProps> = ({
 
   const currentScen = scenarioConfig[scenario];
 
-  // Dynamic calculated financials based on active scenario
-  const effectiveRevenue = activeTier.baselineUsd * currentScen.revenueMult;
-  const rawCogs = (activeTier.baselineUsd * (activeTier.cogsPercent / 100)) * currentScen.cogsMult;
+  // Dynamic calculated financials based on active scenario & risk-weighted sensitivity mode
+  const riskRevenueMultiplier = isRiskWeightedMode ? (1 - riskWeights.revenueSlippagePct / 100) : 1;
+  const riskCogsMultiplier = isRiskWeightedMode ? (1 + (riskWeights.gpuInflationPct * 0.35 + riskWeights.talentWageDriftPct * 0.65) / 100) : 1;
+  const riskCacMultiplier = isRiskWeightedMode ? (1 + riskWeights.cacDragPct / 100) : 1;
+
+  const effectiveRevenue = activeTier.baselineUsd * currentScen.revenueMult * riskRevenueMultiplier;
+  const rawCogs = (activeTier.baselineUsd * (activeTier.cogsPercent / 100)) * currentScen.cogsMult * riskCogsMultiplier;
   const effectiveCogs = Math.min(rawCogs, effectiveRevenue * 0.75);
   const effectiveCogsPercent = Number(((effectiveCogs / effectiveRevenue) * 100).toFixed(1));
 
   const effectiveGrossProfit = effectiveRevenue - effectiveCogs;
   const effectiveGrossMarginPercent = Number(((effectiveGrossProfit / effectiveRevenue) * 100).toFixed(1));
 
-  const effectiveCac = effectiveRevenue * (currentScen.cacPercent / 100);
+  const effectiveCacPercent = Number((currentScen.cacPercent * riskCacMultiplier).toFixed(1));
+  const effectiveCac = effectiveRevenue * (effectiveCacPercent / 100);
   const effectiveOverhead = effectiveRevenue * (currentScen.overheadPercent / 100);
 
   const effectiveNetProfit = effectiveGrossProfit - effectiveCac - effectiveOverhead;
@@ -351,10 +360,10 @@ export const UnitEconomicsSection: React.FC<UnitEconomicsSectionProps> = ({
 
   // Recharts waterfall dataset for active tier & scenario
   const tierWaterfallData = [
-    { name: 'Revenue', value: effectiveRevenue, percentage: 100, color: '#38BDF8', type: 'inflow' },
+    { name: 'Revenue', value: effectiveRevenue, percentage: 100, color: isRiskWeightedMode ? '#F43F5E' : '#38BDF8', type: 'inflow' },
     { name: 'Direct COGS', value: effectiveCogs, percentage: effectiveCogsPercent, color: '#FB7185', type: 'cogs' },
-    { name: 'Gross Profit', value: effectiveGrossProfit, percentage: effectiveGrossMarginPercent, color: '#818CF8', type: 'gross' },
-    { name: 'Sales CAC', value: effectiveCac, percentage: currentScen.cacPercent, color: '#FBBF24', type: 'cac' },
+    { name: 'Gross Profit', value: effectiveGrossProfit, percentage: effectiveGrossMarginPercent, color: isRiskWeightedMode ? '#FB923C' : '#818CF8', type: 'gross' },
+    { name: 'Sales CAC', value: effectiveCac, percentage: effectiveCacPercent, color: '#FBBF24', type: 'cac' },
     { name: 'Overheads', value: effectiveOverhead, percentage: currentScen.overheadPercent, color: '#F59E0B', type: 'overhead' },
     { name: 'Net Profit', value: effectiveNetProfit, percentage: effectiveNetMarginPercent, color: '#34D399', type: 'net' }
   ];
@@ -476,6 +485,20 @@ export const UnitEconomicsSection: React.FC<UnitEconomicsSectionProps> = ({
             </div>
 
             <div className="flex items-center gap-3 flex-wrap justify-center">
+              {/* Investment Risks Overlay Toggle Button */}
+              <button
+                onClick={() => setIsRiskOverlayOpen(true)}
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-mono font-bold transition-all border cursor-pointer ${
+                  isRiskWeightedMode
+                    ? 'bg-rose-950/80 text-rose-300 border-rose-500/60 shadow-md shadow-rose-500/20 ring-1 ring-rose-400/50'
+                    : 'bg-slate-900 text-amber-400 border-amber-500/40 hover:bg-amber-950/40 hover:border-amber-400'
+                }`}
+                title="Configure risk-weighted sensitivity adjustment and inspect bear-case models"
+              >
+                <ShieldAlert className="w-3.5 h-3.5 text-amber-400" />
+                <span>Investment Risks {isRiskWeightedMode ? '· Bear Mode (ON)' : ''}</span>
+              </button>
+
               {/* Compare Mode Toggle */}
               <button
                 onClick={() => {
@@ -586,6 +609,41 @@ export const UnitEconomicsSection: React.FC<UnitEconomicsSectionProps> = ({
             </span>
           </div>
         </div>
+
+        {/* Active Bear-Case Risk-Weighted Sensitivity Banner */}
+        <AnimatePresence>
+          {isRiskWeightedMode && (
+            <motion.div
+              initial={{ opacity: 0, height: 0, y: -8 }}
+              animate={{ opacity: 1, height: 'auto', y: 0 }}
+              exit={{ opacity: 0, height: 0, y: -8 }}
+              className="bg-gradient-to-r from-rose-950/80 via-amber-950/60 to-slate-900 border border-rose-500/50 rounded-xl p-3.5 mb-8 max-w-4xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs font-mono shadow-xl shadow-rose-950/30 overflow-hidden"
+            >
+              <div className="flex items-center gap-2.5">
+                <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0 animate-pulse" />
+                <span className="text-rose-200">
+                  <strong className="text-white uppercase font-bold">BEAR-CASE RISK SENSITIVITY APPLIED:</strong>{' '}
+                  Modeling -{riskWeights.revenueSlippagePct}% contract revenue, +{riskWeights.cacDragPct}% CAC drag ({effectiveCacPercent}%), and +{riskWeights.gpuInflationPct}% compute surcharge across all calculators.
+                </span>
+              </div>
+              <div className="flex items-center gap-2 shrink-0 self-end sm:self-auto">
+                <button
+                  onClick={() => setIsRiskOverlayOpen(true)}
+                  className="px-2.5 py-1 rounded-md bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/40 font-bold transition-all cursor-pointer"
+                >
+                  Adjust Weights
+                </button>
+                <button
+                  onClick={() => setIsRiskWeightedMode(false)}
+                  className="px-2.5 py-1 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-all cursor-pointer"
+                  title="Revert to Growth Baseline"
+                >
+                  Revert
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* AI Financial Summary & Investment Thesis Generator */}
         <FinancialSummaryGenerator
@@ -1342,6 +1400,18 @@ export const UnitEconomicsSection: React.FC<UnitEconomicsSectionProps> = ({
           </>
         )}
       </AnimatePresence>
+
+      {/* Investment Risks & Bear-Case Sensitivity Overlay Modal */}
+      <InvestmentRisksOverlay
+        isOpen={isRiskOverlayOpen}
+        onClose={() => setIsRiskOverlayOpen(false)}
+        currency={currency}
+        activeTier={activeTier}
+        riskWeights={riskWeights}
+        onRiskWeightsChange={setRiskWeights}
+        isRiskModeActive={isRiskWeightedMode}
+        onToggleRiskMode={setIsRiskWeightedMode}
+      />
     </section>
   );
 };

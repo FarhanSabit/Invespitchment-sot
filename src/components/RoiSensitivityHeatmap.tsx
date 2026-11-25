@@ -231,7 +231,7 @@ export const RoiSensitivityHeatmap: React.FC<RoiSensitivityHeatmapProps> = ({
       .enter()
       .append('g')
       .attr('class', 'cell')
-      .attr('transform', (d) => `translate(${xScale(d.cacPct)},${yScale(d.rdBurnUsd)})`)
+      .attr('transform', (d) => `translate(${xScale(d.cacPct) ?? 0},${yScale(d.rdBurnUsd) ?? 0})`)
       .style('cursor', 'pointer')
       .on('click', (_, d) => {
         setSelectedCell({ cac: d.cacPct, rdBurn: d.rdBurnUsd });

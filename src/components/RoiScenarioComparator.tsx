@@ -525,7 +525,7 @@ Capital Payback Velocity: ${configA.paybackMonths} mo (A) vs ${configB.paybackMo
 
         {/* Responsive Recharts Container */}
         <div className="h-72 sm:h-80 w-full p-4 rounded-xl bg-slate-950/90 border border-slate-800/90">
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer width="100%" height="100%" minWidth={100} minHeight={240}>
             <BarChart
               data={chartData}
               margin={{ top: 20, right: 15, left: 10, bottom: 10 }}
