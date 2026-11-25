@@ -12,6 +12,7 @@ import {
   ChevronUp,
   Mail
 } from 'lucide-react';
+import { InvestorSentimentWidget } from './InvestorSentimentWidget';
 
 interface SidebarDockProps {
   onOpenPitchDeck: () => void;
@@ -115,6 +116,9 @@ export const SidebarDock: React.FC<SidebarDockProps> = ({
         })}
 
         <div className="w-6 h-[1px] bg-slate-800 my-1" />
+
+        {/* Investor Sentiment Widget Dial */}
+        <InvestorSentimentWidget />
 
         {/* Persona Track Wizard Trigger */}
         {onOpenOnboarding && (

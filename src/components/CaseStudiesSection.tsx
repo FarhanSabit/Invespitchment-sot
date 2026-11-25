@@ -15,6 +15,7 @@ import {
 import { CASE_STUDIES } from '../data/mockData';
 import { Currency, USD_TO_BDT_RATE } from '../types';
 import { CopyShareButton } from './CopyShareButton';
+import { ArPreviewButton } from './ArPreviewButton';
 import { 
   CheckCircle2, 
   TrendingUp, 
@@ -141,12 +142,13 @@ export const CaseStudiesSection: React.FC<CaseStudiesSectionProps> = ({ currency
           transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           className="text-center max-w-3xl mx-auto mb-14 space-y-3"
         >
-          <div className="flex items-center justify-center gap-2">
+          <div className="flex items-center justify-center gap-2 flex-wrap">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-950/60 border border-emerald-500/30 text-xs font-mono text-emerald-300">
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
               <span>TRACTION & PROVEN OPERATIONAL ROI</span>
             </div>
             <CopyShareButton sectionId="case-studies" sectionTitle="Case Studies & ROI" variant="pill" />
+            <ArPreviewButton sectionId="case-studies" sectionTitle="Enterprise Case Studies" modelPreset="spatial-twin" subtitle="Prime Bank & Samsung Cleanroom SOPs" />
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white font-display">
             Cross-Domain Enterprise Case Studies

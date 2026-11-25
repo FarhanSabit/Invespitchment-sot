@@ -33,6 +33,9 @@ import { SectionMap } from './components/SectionMap';
 import { AnomalyWatchToast } from './components/AnomalyWatchToast';
 import { VoiceNavigator } from './components/VoiceNavigator';
 import { MessageSquare } from 'lucide-react';
+import { SentimentProvider } from './context/SentimentContext';
+import { ArPreviewProvider } from './context/ArPreviewContext';
+import { ArPreviewModal } from './components/ArPreviewModal';
 
 export type GlobalViewMode = 'investor' | 'partner';
 
@@ -157,10 +160,12 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#05070B] text-slate-100 font-sans selection:bg-cyan-500/30 selection:text-cyan-200 relative overflow-x-hidden">
-      
-      {/* Global Scroll Progress Bar at very top */}
-      <ScrollProgressBar />
+    <SentimentProvider>
+      <ArPreviewProvider>
+        <div className="min-h-screen bg-[#05070B] text-slate-100 font-sans selection:bg-cyan-500/30 selection:text-cyan-200 relative overflow-x-hidden">
+          
+          {/* Global Scroll Progress Bar at very top */}
+          <ScrollProgressBar />
 
       {/* Global Loading Screen Sequence on initial load */}
       <GlobalLoadingScreen />
@@ -339,7 +344,12 @@ export default function App() {
       <SectionMap comments={comments} />
       <AnomalyWatchToast />
       <VoiceNavigator />
+
+      {/* Floating Augmented Reality 3D Spatial Viewer Modal */}
+      <ArPreviewModal />
     </div>
+    </ArPreviewProvider>
+  </SentimentProvider>
   );
 }
 

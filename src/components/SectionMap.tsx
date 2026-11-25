@@ -128,11 +128,15 @@ export const SectionMap: React.FC<{ comments?: FeedbackComment[] }> = ({ comment
   }, [pinnedSections, isSearchOpen, isHeatmapMode, isOpen, activeSection, mapScale, statusFilter, isFilterOpen, isLegendOpen, isMapCollapsed]);
 
   const scrollToSection = (id: string) => {
+    setActiveSection(id);
     const el = document.getElementById(id);
     if (el) {
       el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      el.classList.add('ring-2', 'ring-cyan-400', 'transition-all');
-      setTimeout(() => el.classList.remove('ring-2', 'ring-cyan-400'), 3000);
+      // Apply the exact same visual glow highlight used in App.tsx deep linking effect
+      el.classList.add('ring-2', 'ring-cyan-400', 'ring-offset-4', 'ring-offset-[#05070B]', 'transition-all', 'duration-1000');
+      setTimeout(() => {
+        el.classList.remove('ring-2', 'ring-cyan-400', 'ring-offset-4', 'ring-offset-[#05070B]');
+      }, 3000);
     }
   };
 

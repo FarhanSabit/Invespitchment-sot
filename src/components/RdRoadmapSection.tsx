@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { CopyShareButton } from './CopyShareButton';
+import { ArPreviewButton } from './ArPreviewButton';
 import { 
   GitBranch, 
   Layers, 
@@ -225,12 +226,13 @@ export const RdRoadmapSection: React.FC = () => {
           transition={{ duration: 0.6 }}
           className="text-center max-w-3xl mx-auto mb-12 space-y-3"
         >
-          <div className="flex items-center justify-center gap-2">
+          <div className="flex items-center justify-center gap-2 flex-wrap">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/60 border border-cyan-500/30 text-xs font-mono text-cyan-300">
               <GitBranch className="w-3.5 h-3.5 text-cyan-400" />
               <span>TECHNOLOGY HORIZONS // 2024 – 2027 EXECUTION ROADMAP</span>
             </div>
             <CopyShareButton sectionId="rd-roadmap" sectionTitle="R&D Roadmap" variant="pill" />
+            <ArPreviewButton sectionId="rd-roadmap" sectionTitle="R&D Roadmap" modelPreset="fusion-core" subtitle="Technology Horizons 2024–2027" />
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white font-display">
             R&D & Technology Maturation Gantt

@@ -19,6 +19,7 @@ import {
 import { FINANCIAL_TIERS } from '../data/mockData';
 import { Currency, FinancialTier, USD_TO_BDT_RATE } from '../types';
 import { CopyShareButton } from './CopyShareButton';
+import { ArPreviewButton } from './ArPreviewButton';
 import { RoiSensitivitySlider } from './RoiSensitivitySlider';
 import { FinancialSummaryGenerator } from './FinancialSummaryGenerator';
 import { 
@@ -403,12 +404,13 @@ export const UnitEconomicsSection: React.FC<UnitEconomicsSectionProps> = ({
           transition={{ duration: 0.6 }}
           className="text-center max-w-3xl mx-auto mb-10 space-y-3"
         >
-          <div className="flex items-center justify-center gap-2">
+          <div className="flex items-center justify-center gap-2 flex-wrap">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/60 border border-cyan-500/30 text-xs font-mono text-cyan-300">
               <Calculator className="w-3.5 h-3.5 text-cyan-400" />
               <span>AUDIT-READY FINANCIAL MODELS // USD & BDT DUAL-SHORE</span>
             </div>
             <CopyShareButton sectionId="unit-economics" sectionTitle="Unit Economics" variant="pill" />
+            <ArPreviewButton sectionId="unit-economics" sectionTitle="9-Tier Unit Economics" modelPreset="financial-waterfall" subtitle="Audited 3D Margin Lattice" />
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white font-display">
             Recalibrated 9-Tier Unit Economics

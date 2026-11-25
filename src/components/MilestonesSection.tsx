@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { Calendar, CheckCircle2, Clock, Target, ArrowRight } from 'lucide-react';
+import { ArPreviewButton } from './ArPreviewButton';
 
 interface Sprint {
   id: string;
@@ -56,15 +57,18 @@ export const MilestonesSection: React.FC = () => {
     <section id="milestones" className="py-24 bg-[#0a0f16] relative border-t border-slate-800/50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center mb-16">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 font-mono text-xs font-bold mb-4"
-          >
-            <Target className="w-4 h-4" />
-            MAJOR MILESTONES
-          </motion.div>
+          <div className="flex items-center justify-center gap-2 flex-wrap mb-4">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 font-mono text-xs font-bold"
+            >
+              <Target className="w-4 h-4" />
+              MAJOR MILESTONES
+            </motion.div>
+            <ArPreviewButton sectionId="milestones" sectionTitle="Strategic Sprints & Milestones" modelPreset="fusion-core" subtitle="R&D & Launch Sprints" />
+          </div>
           <h2 className="text-3xl md:text-5xl font-heading font-bold text-white mb-6">
             Strategic Sprints & <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">Execution Tracking</span>
           </h2>

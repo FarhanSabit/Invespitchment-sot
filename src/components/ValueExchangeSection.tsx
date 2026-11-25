@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { motion } from 'motion/react';
 import * as d3 from 'd3';
 import { Activity } from 'lucide-react';
+import { ArPreviewButton } from './ArPreviewButton';
 
 interface Node extends d3.SimulationNodeDatum {
   id: string;
@@ -219,15 +220,18 @@ export const ValueExchangeSection: React.FC = () => {
     <section id="value-exchange" className="py-24 bg-[#05070B] relative border-t border-slate-800/50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center mb-16">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 font-mono text-xs font-bold mb-4"
-          >
-            <Activity className="w-4 h-4" />
-            VALUE EXCHANGE MODEL
-          </motion.div>
+          <div className="flex items-center justify-center gap-2 flex-wrap mb-4">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 font-mono text-xs font-bold"
+            >
+              <Activity className="w-4 h-4" />
+              VALUE EXCHANGE MODEL
+            </motion.div>
+            <ArPreviewButton sectionId="value-exchange" sectionTitle="Value Exchange Model" modelPreset="spatial-twin" subtitle="Circular Economic Flow" />
+          </div>
           <h2 className="text-3xl md:text-5xl font-heading font-bold text-white mb-6">
             Circular Economic <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">Flow</span>
           </h2>

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { NON_CLIENT_STREAMS } from '../data/mockData';
 import { Currency } from '../types';
+import { ArPreviewButton } from './ArPreviewButton';
 import { 
   Box, 
   Gamepad2, 
@@ -49,9 +50,12 @@ export const PassiveIPSection: React.FC<PassiveIPSectionProps> = ({ currency }) 
           transition={{ duration: 0.6 }}
           className="text-center max-w-3xl mx-auto mb-14 space-y-3"
         >
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-950/60 border border-purple-500/30 text-xs font-mono text-purple-300">
-            <Box className="w-3.5 h-3.5 text-purple-400" />
-            <span>DIVERSIFIED HIGH-MARGIN IP // NON-CLIENT CASHFLOW</span>
+          <div className="flex items-center justify-center gap-2 flex-wrap">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-950/60 border border-purple-500/30 text-xs font-mono text-purple-300">
+              <Box className="w-3.5 h-3.5 text-purple-400" />
+              <span>DIVERSIFIED HIGH-MARGIN IP // NON-CLIENT CASHFLOW</span>
+            </div>
+            <ArPreviewButton sectionId="passive-ip" sectionTitle="Passive & Creator IP Engines" modelPreset="spatial-twin" subtitle="3D Asset Royalties & Micro-SaaS" />
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white font-display">
             Passive & Creator Commerce Engines

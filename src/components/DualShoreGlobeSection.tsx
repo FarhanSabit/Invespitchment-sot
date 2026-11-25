@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { motion } from 'motion/react';
 import { CopyShareButton } from './CopyShareButton';
+import { ArPreviewButton } from './ArPreviewButton';
 import { 
   Globe, 
   Wifi, 
@@ -274,12 +275,13 @@ export const DualShoreGlobeSection: React.FC<DualShoreGlobeSectionProps> = ({ on
           transition={{ duration: 0.6 }}
           className="text-center max-w-3xl mx-auto mb-12 space-y-3"
         >
-          <div className="flex items-center justify-center gap-2">
+          <div className="flex items-center justify-center gap-2 flex-wrap">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/60 border border-cyan-500/30 text-xs font-mono text-cyan-300">
               <Globe className="w-3.5 h-3.5 text-cyan-400" />
               <span>GLOBAL INFRASTRUCTURE & 24/7 DUAL-SHORE VELOCITY</span>
             </div>
             <CopyShareButton sectionId="dual-shore-globe" sectionTitle="Dual-Shore Global Infrastructure" variant="pill" />
+            <ArPreviewButton sectionId="dual-shore-globe" sectionTitle="Dual-Shore Global Sync" modelPreset="global-orbit" subtitle="San Jose ↔ Dhaka 3D Orbital Mesh" />
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white font-display">
             San Jose ↔ Dhaka Real-Time Sync

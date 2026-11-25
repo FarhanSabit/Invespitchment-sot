@@ -24,6 +24,7 @@ import {
 
 import { GlobalViewMode } from '../App';
 import { SpentaLogo } from './SpentaLogo';
+import { ArPreviewButton } from './ArPreviewButton';
 
 interface HeroSectionProps {
   currency: Currency;
@@ -204,12 +205,15 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             className="lg:col-span-7 space-y-6"
           >
             <div className="space-y-3">
-              <div className="inline-flex items-center gap-3 px-3.5 py-2 rounded-xl bg-slate-950/90 border border-slate-800/90 shadow-lg">
-                <SpentaLogo size="sm" />
-                <div className="h-5 w-px bg-slate-800" />
-                <span className="text-[10px] font-mono text-cyan-300 uppercase tracking-wider font-bold">
-                  MASTER SSOT // INVESTOR BRIEFING
-                </span>
+              <div className="flex flex-wrap items-center gap-2.5">
+                <div className="inline-flex items-center gap-3 px-3.5 py-2 rounded-xl bg-slate-950/90 border border-slate-800/90 shadow-lg">
+                  <SpentaLogo size="sm" />
+                  <div className="h-5 w-px bg-slate-800" />
+                  <span className="text-[10px] font-mono text-cyan-300 uppercase tracking-wider font-bold">
+                    MASTER SSOT // INVESTOR BRIEFING
+                  </span>
+                </div>
+                <ArPreviewButton sectionId="hero" sectionTitle="Executive Briefing" modelPreset="fusion-core" subtitle="Spenta Intelligent Reality" />
               </div>
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white font-display leading-[1.1]">
                 {globalViewMode === 'investor' ? (

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { CopyShareButton } from './CopyShareButton';
+import { ArPreviewButton } from './ArPreviewButton';
 import { 
   Glasses, 
   Cpu, 
@@ -288,12 +289,13 @@ export const DualEngineSection: React.FC = () => {
           transition={{ duration: 0.6 }}
           className="text-center max-w-3xl mx-auto mb-10 space-y-3"
         >
-          <div className="flex items-center justify-center gap-2">
+          <div className="flex items-center justify-center gap-2 flex-wrap">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-950/60 border border-indigo-500/30 text-xs font-mono text-indigo-300">
               <Layers className="w-3.5 h-3.5 text-indigo-400" />
               <span>SYNERGISTIC COMMERCIAL PORTFOLIOS</span>
             </div>
             <CopyShareButton sectionId="dual-engines" sectionTitle="Dual Commercial Engines" variant="pill" />
+            <ArPreviewButton sectionId="dual-engines" sectionTitle="The Dual Engines" modelPreset="spatial-twin" subtitle="Commercial Portfolios" />
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white font-display">
             The Dual-Engine Advantage

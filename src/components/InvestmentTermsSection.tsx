@@ -9,6 +9,7 @@ import {
 } from 'recharts';
 import { Currency, USD_TO_BDT_RATE } from '../types';
 import { CopyShareButton } from './CopyShareButton';
+import { ArPreviewButton } from './ArPreviewButton';
 import { 
   Target, 
   ShieldCheck, 
@@ -95,12 +96,13 @@ export const InvestmentTermsSection: React.FC<InvestmentTermsSectionProps> = ({
           transition={{ duration: 0.6 }}
           className="text-center max-w-3xl mx-auto mb-14 space-y-3"
         >
-          <div className="flex items-center justify-center gap-2">
+          <div className="flex items-center justify-center gap-2 flex-wrap">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/60 border border-cyan-500/30 text-xs font-mono text-cyan-300">
               <Target className="w-3.5 h-3.5 text-cyan-400" />
               <span>SEED FINANCING MEMO // YC POST-MONEY SAFE</span>
             </div>
             <CopyShareButton sectionId="investment-terms" sectionTitle="Investment Terms & SAFE" variant="pill" />
+            <ArPreviewButton sectionId="investment-terms" sectionTitle="Seed SAFE & Capital Allocation" modelPreset="financial-waterfall" subtitle="$500k @ $4.5M Post-Money Cap" />
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white font-display">
             The Investment Opportunity

@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { FUSION_LAYERS } from '../data/mockData';
 import { FusionLayer } from '../types';
 import { CopyShareButton } from './CopyShareButton';
+import { ArPreviewButton } from './ArPreviewButton';
 import { 
   Layers, 
   Database, 
@@ -84,12 +85,13 @@ export const FusionStackSection: React.FC = () => {
           transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           className="text-center max-w-3xl mx-auto mb-14 space-y-3"
         >
-          <div className="flex items-center justify-center gap-2">
+          <div className="flex items-center justify-center gap-2 flex-wrap">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/60 border border-cyan-500/30 text-xs font-mono text-cyan-300">
               <Layers className="w-3.5 h-3.5 text-cyan-400" />
               <span>TECHNICAL BLUEPRINT // THE 6-LAYER FUSION ARCHITECTURE</span>
             </div>
             <CopyShareButton sectionId="fusion-stack" sectionTitle="6-Layer Fusion Stack" variant="pill" />
+            <ArPreviewButton sectionId="fusion-stack" sectionTitle="6-Layer Fusion Architecture" modelPreset="fusion-core" subtitle="Composable Neural Matrix" />
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white font-display">
             Composable Stack: Sensing to Enterprise Action
