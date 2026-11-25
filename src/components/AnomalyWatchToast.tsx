@@ -31,7 +31,7 @@ export const AnomalyWatchToast: React.FC = () => {
   };
 
   return (
-    <div className="fixed bottom-6 left-6 z-[90]">
+    <div className="floating-sidebar anomaly-watch-toast fixed bottom-6 left-6 z-[90]">
       <AnimatePresence>
         {isVisible && (
           <motion.div

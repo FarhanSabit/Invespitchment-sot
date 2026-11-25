@@ -348,7 +348,7 @@ export const SectionMap: React.FC<{ comments?: FeedbackComment[] }> = ({ comment
 
   return (
     <>
-      <div className="fixed bottom-6 right-6 xl:left-6 xl:right-auto xl:top-1/2 xl:-translate-y-1/2 xl:bottom-auto z-[80] flex flex-col gap-2 items-end xl:items-start pointer-events-none">
+      <div className="floating-sidebar section-map-overlay fixed bottom-6 right-6 xl:left-6 xl:right-auto xl:top-1/2 xl:-translate-y-1/2 xl:bottom-auto z-[80] flex flex-col gap-2 items-end xl:items-start pointer-events-none">
         
         {/* Mobile Toggle Button */}
         <button

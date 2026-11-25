@@ -295,12 +295,24 @@
     print-color-adjust: exact !important;
   }
 
-  /* Hide ALL UI overlays: modals, drawers, tooltips, fixed chrome, HUD widgets */
+  /* Explicitly hide redundant UI chrome: SectionMarker badges, navigational breadcrumbs,
+     floating sidebars, SectionMap, voice/anomaly HUDs, modals, drawers, and tooltips */
   header,
   nav,
   aside,
   .fixed,
   .sticky,
+  #main-navbar,
+  #breadcrumb-nav,
+  .breadcrumb-nav,
+  #sidebar-navigation-dock,
+  .sidebar-dock,
+  .floating-sidebar,
+  .section-map-overlay,
+  .active-track-indicator,
+  .anomaly-watch-toast,
+  .voice-navigator,
+  .section-marker,
   [role="dialog"],
   [role="alertdialog"],
   [role="tooltip"],
@@ -316,6 +328,7 @@
   input[type="range"],
   canvas {
     display: none !important;
+    visibility: hidden !important;
   }
 
   /* Ensure main briefing flow uses clean full-width single-column print layout */
@@ -325,7 +338,7 @@
     margin: 0 !important;
   }
 
-  /* Target designated Investor Briefing sections specifically */
+  /* Target designated Investor Briefing sections with balanced top & bottom print margins */
   #hero,
   #dual-engines,
   #fusion-stack,
@@ -345,8 +358,14 @@
     background: #ffffff !important;
     background-image: none !important;
     color: #0f172a !important;
-    padding: 18pt 0 !important;
-    margin: 0 0 12pt 0 !important;
+    margin-top: 24pt !important;
+    margin-bottom: 24pt !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding-top: 16pt !important;
+    padding-bottom: 18pt !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
     border-top: none !important;
     border-bottom: 1pt solid #cbd5e1 !important;
     min-height: 0 !important;
@@ -355,6 +374,12 @@
     box-shadow: none !important;
     break-inside: auto;
     page-break-inside: auto;
+  }
+
+  /* Trim top margin on the cover/hero section so page 1 starts cleanly */
+  #hero {
+    margin-top: 0 !important;
+    padding-top: 8pt !important;
   }
 
   /* Start major diligence sections cleanly on new pages */
@@ -366,6 +391,7 @@
   #investment-terms {
     break-before: page;
     page-break-before: always;
+    margin-top: 12pt !important;
   }
 
   /* Normalize nested cards, panels, grids, and tables for crisp legibility */

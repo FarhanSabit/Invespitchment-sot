@@ -76,7 +76,7 @@ export const SidebarDock: React.FC<SidebarDockProps> = ({
     <aside 
       id="sidebar-navigation-dock" 
       aria-label="Section Navigation Dock"
-      className="fixed right-4 top-1/2 -translate-y-1/2 z-40 hidden 2xl:flex flex-col items-center gap-3 pointer-events-auto"
+      className="floating-sidebar sidebar-dock fixed right-4 top-1/2 -translate-y-1/2 z-40 hidden 2xl:flex flex-col items-center gap-3 pointer-events-auto"
     >
       {/* Scroll Progress Tube & High Density Rail */}
       <div className="bg-slate-950 border border-slate-800 shadow-2xl p-2 rounded-xl flex flex-col items-center gap-1.5">

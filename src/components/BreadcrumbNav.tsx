@@ -68,7 +68,8 @@ export const BreadcrumbNav: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
           transition={{ duration: 0.2 }}
-          className="fixed top-[60px] md:top-[72px] left-0 right-0 z-40 bg-[#070A10]/95 backdrop-blur-md border-b border-slate-800/80 px-4 md:px-8 py-2 flex items-center justify-between"
+          className="breadcrumb-nav fixed top-[60px] md:top-[72px] left-0 right-0 z-40 bg-[#070A10]/95 backdrop-blur-md border-b border-slate-800/80 px-4 md:px-8 py-2 flex items-center justify-between"
+          id="breadcrumb-nav"
         >
           <div className="flex items-center gap-2 max-w-7xl mx-auto w-full text-xs font-mono font-medium text-slate-400">
             <button 

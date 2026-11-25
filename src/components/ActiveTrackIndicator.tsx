@@ -23,7 +23,7 @@ export const ActiveTrackIndicator: React.FC<ActiveTrackIndicatorProps> = ({
 
   if (!activePersona) {
     return (
-      <div className="fixed bottom-5 left-5 z-40">
+      <div className="floating-sidebar active-track-indicator fixed bottom-5 left-5 z-40">
         <button
           onClick={onOpenWizard}
           className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-950/90 hover:bg-slate-900 border border-cyan-500/40 text-cyan-300 text-xs font-mono backdrop-blur-xl shadow-2xl transition-all group cursor-pointer hover:border-cyan-400"
@@ -52,7 +52,7 @@ export const ActiveTrackIndicator: React.FC<ActiveTrackIndicatorProps> = ({
   };
 
   return (
-    <div className="fixed bottom-5 left-5 z-40 max-w-xs sm:max-w-sm">
+    <div className="floating-sidebar active-track-indicator fixed bottom-5 left-5 z-40 max-w-xs sm:max-w-sm">
       <div className="bg-slate-950/95 border border-cyan-500/40 rounded-xl shadow-2xl backdrop-blur-xl overflow-hidden hud-corner">
         
         {/* Header Bar */}

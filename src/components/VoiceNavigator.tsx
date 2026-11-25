@@ -95,7 +95,7 @@ export const VoiceNavigator: React.FC = () => {
   }
 
   return (
-    <div className="fixed bottom-6 right-6 z-[90] flex flex-col items-end gap-2">
+    <div className="floating-sidebar voice-navigator fixed bottom-6 right-6 z-[90] flex flex-col items-end gap-2">
       {transcript && (
         <div className="bg-slate-900/80 backdrop-blur border border-slate-700 text-cyan-400 font-mono text-xs px-3 py-1.5 rounded animate-pulse">
           {transcript}
