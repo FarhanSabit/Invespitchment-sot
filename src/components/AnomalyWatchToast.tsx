@@ -31,14 +31,14 @@ export const AnomalyWatchToast: React.FC = () => {
   };
 
   return (
-    <div className="floating-sidebar anomaly-watch-toast fixed bottom-6 left-6 z-[90]">
+    <div className="floating-sidebar anomaly-watch-toast fixed bottom-16 left-4 z-[65] max-w-[calc(100vw-2rem)] sm:max-w-sm pointer-events-auto">
       <AnimatePresence>
         {isVisible && (
           <motion.div
             initial={{ opacity: 0, x: -50, scale: 0.9 }}
             animate={{ opacity: 1, x: 0, scale: 1 }}
             exit={{ opacity: 0, x: -50, scale: 0.9 }}
-            className="bg-slate-950/90 backdrop-blur-md border border-rose-500/50 rounded-lg shadow-[0_0_20px_rgba(244,63,94,0.2)] p-4 max-w-sm w-full"
+            className="bg-slate-950/95 backdrop-blur-md border border-rose-500/50 rounded-lg shadow-[0_0_20px_rgba(244,63,94,0.2)] p-4 w-full"
           >
             <div 
               className="flex justify-between items-start cursor-pointer group" 

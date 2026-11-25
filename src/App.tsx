@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Currency, FeedbackComment } from './types';
 import { Navbar } from './components/Navbar';
-import { SidebarDock } from './components/SidebarDock';
 import { HeroSection } from './components/HeroSection';
 import { InvestorNewsTicker } from './components/InvestorNewsTicker';
 import { DualEngineSection } from './components/DualEngineSection';
@@ -236,14 +235,6 @@ export default function App() {
         scenario={activeScenario}
       />
 
-      {/* Floating Spatial Sidebar Dock */}
-      <SidebarDock
-        onOpenPitchDeck={() => setIsPitchDeckOpen(true)}
-        onOpenDataRoom={() => setIsDataRoomOpen(true)}
-        onOpenContact={() => handleOpenContact('Direct Leadership Inquiry')}
-        onOpenOnboarding={() => setIsOnboardingOpen(true)}
-      />
-
       {/* Main Single-Page Scroll Content */}
       <main id="main-content">
         
@@ -446,7 +437,12 @@ export default function App() {
       />
       
       <SectionMap comments={comments} />
-      <SectionNavigator />
+      <SectionNavigator
+        onOpenPitchDeck={() => setIsPitchDeckOpen(true)}
+        onOpenDataRoom={() => setIsDataRoomOpen(true)}
+        onOpenContact={() => handleOpenContact('Direct Leadership Inquiry')}
+        onOpenOnboarding={() => setIsOnboardingOpen(true)}
+      />
       <AnomalyWatchToast />
       <VoiceNavigator />
 
@@ -457,7 +453,7 @@ export default function App() {
       {restoredSessionNotice && (
         <div 
           data-print-hide="true"
-          className="fixed bottom-6 right-6 z-50 max-w-sm sm:max-w-md p-4 rounded-xl bg-slate-950/95 border border-cyan-500/50 shadow-2xl backdrop-blur-xl text-slate-100 flex items-start gap-3 no-print"
+          className="fixed bottom-20 right-4 z-[85] max-w-sm sm:max-w-md p-4 rounded-xl bg-slate-950/95 border border-cyan-500/50 shadow-2xl backdrop-blur-xl text-slate-100 flex items-start gap-3 no-print"
         >
           <div className="p-2 rounded-lg bg-cyan-950 text-cyan-400 shrink-0 mt-0.5 border border-cyan-500/30">
             <Share2 className="w-4 h-4" />

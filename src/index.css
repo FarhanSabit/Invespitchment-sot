@@ -572,5 +572,18 @@
   }
 }
 
+/* Protected Horizontal Gutters for Fixed Side Rails (1024px - 1460px) */
+@media screen and (min-width: 1024px) and (max-width: 1460px) {
+  #main-content .max-w-7xl,
+  #main-footer .max-w-7xl {
+    padding-right: 4.25rem;
+  }
+}
 
-
+@media screen and (min-width: 1280px) and (max-width: 1460px) {
+  #main-content .max-w-7xl,
+  #main-footer .max-w-7xl {
+    padding-left: 4.25rem;
+    padding-right: 4.25rem;
+  }
+}

@@ -219,7 +219,7 @@ export const SectionMap: React.FC<{ comments?: FeedbackComment[] }> = ({ comment
     const shouldDim = !isMatched || isFocusedOut || !matchesStatusFilter;
 
     let bgStyle = {};
-    let bgClass = `w-7 h-7 shrink-0 rounded-full flex items-center justify-center transition-all duration-300 relative border cursor-pointer `;
+    let bgClass = `w-6 h-6 shrink-0 rounded-full flex items-center justify-center transition-all duration-300 relative border cursor-pointer `;
 
     if (shouldDim) {
       bgClass += 'opacity-30 grayscale ';
@@ -425,32 +425,19 @@ export const SectionMap: React.FC<{ comments?: FeedbackComment[] }> = ({ comment
 
   return (
     <>
-      <div className="floating-sidebar section-map-overlay fixed bottom-6 right-6 xl:left-6 xl:right-auto xl:top-1/2 xl:-translate-y-1/2 xl:bottom-auto z-[80] flex flex-col gap-2 items-end xl:items-start pointer-events-none">
+      <div className="floating-sidebar section-map-overlay fixed bottom-20 right-4 xl:left-4 xl:right-auto xl:top-1/2 xl:-translate-y-1/2 xl:bottom-auto z-[68] flex flex-col gap-2 items-end xl:items-start pointer-events-none">
         
-        {/* Mobile Toggle Button */}
+        {/* Mobile Toggle Button (Stacked cleanly above VoiceNavigator at bottom-4 right-4) */}
         <button
           onClick={() => setIsMapCollapsed(!isMapCollapsed)}
-          className="xl:hidden px-4 py-2 bg-slate-950 border border-slate-800 rounded-full shadow-2xl text-cyan-400 pointer-events-auto flex items-center justify-center gap-2 hover:bg-slate-900 transition-colors"
+          className="xl:hidden px-3.5 py-2 bg-slate-950/95 border border-slate-800 rounded-full shadow-2xl text-cyan-400 pointer-events-auto flex items-center justify-center gap-2 hover:bg-slate-900 transition-colors whitespace-nowrap shrink-0"
         >
-          <Map className="w-4 h-4" />
+          <Map className="w-4 h-4 shrink-0" />
           <span className="text-[10px] font-bold font-mono tracking-wider">MAP</span>
           <motion.div animate={{ rotate: isMapCollapsed ? 0 : 180 }} transition={{ duration: 0.3 }}>
-            <ChevronUp className="w-4 h-4" />
+            <ChevronUp className="w-4 h-4 shrink-0" />
           </motion.div>
         </button>
-
-        {/* Zoom Controls Overlay */}
-        <div className="hidden xl:flex absolute -left-12 top-1/2 -translate-y-1/2 flex-col items-center bg-slate-950/90 backdrop-blur-md border border-slate-800 rounded-full p-1.5 shadow-xl gap-1 pointer-events-auto">
-          <button onClick={handleZoomIn} className="p-1.5 text-slate-400 hover:text-cyan-400 hover:bg-slate-900 rounded-full transition-colors" title="Zoom In">
-            <ZoomIn className="w-4 h-4" />
-          </button>
-          <button onClick={handleZoomReset} className="py-1 text-[9px] font-mono font-bold text-slate-500 hover:text-slate-300 transition-colors w-full text-center" title="Reset Zoom">
-            {Math.round(mapScale * 100)}%
-          </button>
-          <button onClick={handleZoomOut} className="p-1.5 text-slate-400 hover:text-cyan-400 hover:bg-slate-900 rounded-full transition-colors" title="Zoom Out">
-            <ZoomOut className="w-4 h-4" />
-          </button>
-        </div>
 
         {/* Main Map Content */}
         <div className="pointer-events-auto">
@@ -460,18 +447,31 @@ export const SectionMap: React.FC<{ comments?: FeedbackComment[] }> = ({ comment
         >
           <motion.div 
             ref={containerRef}
-            className="bg-slate-950/80 backdrop-blur-md border border-slate-800 rounded-[2rem] p-2 flex flex-col items-center shadow-2xl relative"
+            className="bg-slate-950/85 backdrop-blur-md border border-slate-800 rounded-[1.75rem] p-1.5 flex flex-col items-center shadow-2xl relative"
             onMouseEnter={() => setIsOpen(true)}
             onMouseLeave={() => setIsOpen(false)}
           >
+            {/* Safe-Inset Zoom Controls integrated cleanly at top of Map */}
+            <div className="hidden xl:flex items-center justify-center gap-0.5 px-1 py-1 mb-1 border-b border-slate-800/80 w-full">
+              <button onClick={handleZoomOut} className="p-1 text-slate-400 hover:text-cyan-400 hover:bg-slate-900 rounded transition-colors cursor-pointer" title="Zoom Out" aria-label="Zoom Out">
+                <ZoomOut className="w-3 h-3" />
+              </button>
+              <button onClick={handleZoomReset} className="px-1 py-0.5 text-[9px] font-mono tabular-nums font-bold text-slate-500 hover:text-slate-300 transition-colors cursor-pointer" title="Reset Zoom">
+                {Math.round(mapScale * 100)}%
+              </button>
+              <button onClick={handleZoomIn} className="p-1 text-slate-400 hover:text-cyan-400 hover:bg-slate-900 rounded transition-colors cursor-pointer" title="Zoom In" aria-label="Zoom In">
+                <ZoomIn className="w-3 h-3" />
+              </button>
+            </div>
+
             <AnimatePresence initial={false}>
-              {(!isMapCollapsed || window.innerWidth >= 1280) && (
+              {(!isMapCollapsed || (typeof window !== 'undefined' && window.innerWidth >= 1280)) && (
                 <motion.div
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: 'auto', opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
                   transition={{ duration: 0.3, ease: 'easeInOut' }}
-                  className="flex flex-col items-start gap-2 overflow-hidden w-full relative SectionMap-collapsible-container p-2 shadow-inner bg-slate-950/40 hover:bg-slate-900/50 transition-colors rounded-[1.5rem]"
+                  className="flex flex-col items-start gap-1.5 overflow-visible w-full relative SectionMap-collapsible-container p-1.5 shadow-inner bg-slate-950/40 hover:bg-slate-900/50 transition-colors rounded-[1.25rem]"
                 >
                   {/* Animated Flow Lines Layer */}
             <svg className="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-visible">

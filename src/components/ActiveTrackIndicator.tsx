@@ -23,15 +23,15 @@ export const ActiveTrackIndicator: React.FC<ActiveTrackIndicatorProps> = ({
 
   if (!activePersona) {
     return (
-      <div className="floating-sidebar active-track-indicator fixed bottom-5 left-5 z-40">
+      <div className="floating-sidebar active-track-indicator fixed bottom-4 left-4 z-[60] max-w-[calc(100vw-6rem)] sm:max-w-xs">
         <button
           onClick={onOpenWizard}
-          className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-950/90 hover:bg-slate-900 border border-cyan-500/40 text-cyan-300 text-xs font-mono backdrop-blur-xl shadow-2xl transition-all group cursor-pointer hover:border-cyan-400"
+          className="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-950/90 hover:bg-slate-900 border border-cyan-500/40 text-cyan-300 text-xs font-mono backdrop-blur-xl shadow-2xl transition-all group cursor-pointer hover:border-cyan-400 whitespace-nowrap"
           title="Personalize Briefing by Investor Persona"
         >
-          <Target className="w-4 h-4 text-cyan-400 animate-pulse" />
-          <span className="font-semibold">Investor Briefing Track</span>
-          <span className="text-[10px] px-1.5 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-500/30">
+          <Target className="w-4 h-4 text-cyan-400 animate-pulse shrink-0" />
+          <span className="font-semibold truncate">Investor Briefing Track</span>
+          <span className="text-[10px] px-1.5 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-500/30 shrink-0">
             Select Track
           </span>
         </button>
@@ -52,7 +52,7 @@ export const ActiveTrackIndicator: React.FC<ActiveTrackIndicatorProps> = ({
   };
 
   return (
-    <div className="floating-sidebar active-track-indicator fixed bottom-5 left-5 z-40 max-w-xs sm:max-w-sm">
+    <div className="floating-sidebar active-track-indicator fixed bottom-4 left-4 z-[60] max-w-[calc(100vw-6rem)] sm:max-w-xs">
       <div className="bg-slate-950/95 border border-cyan-500/40 rounded-xl shadow-2xl backdrop-blur-xl overflow-hidden hud-corner">
         
         {/* Header Bar */}
