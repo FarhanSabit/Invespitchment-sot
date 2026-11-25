@@ -329,7 +329,7 @@ export const CaseStudiesSection: React.FC<CaseStudiesSectionProps> = ({ currency
 
           {/* Recharts Multi-Series Line & Area Visualization Container */}
           <div className="w-full h-72 sm:h-80">
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height="100%" minWidth={100} minHeight={240}>
               <AreaChart data={longitudinalPerformanceData} margin={{ top: 10, right: 20, left: -10, bottom: 0 }}>
                 <defs>
                   <linearGradient id="roiGradient" x1="0" y1="0" x2="0" y2="1">

@@ -19,12 +19,15 @@ import {
   Target,
   ArrowRight,
   Zap,
-  Calculator
+  Calculator,
+  FileText,
+  Download
 } from 'lucide-react';
 
 import { GlobalViewMode } from '../App';
 import { SpentaLogo } from './SpentaLogo';
 import { ArPreviewButton } from './ArPreviewButton';
+import { downloadSsotExecutiveSummary } from '../utils/ssotSummaryGenerator';
 
 interface HeroSectionProps {
   currency: Currency;
@@ -39,9 +42,16 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   onOpenPitchDeck,
   onOpenDataRoom,
   onOpenContact,
-  globalViewMode = 'investor'
+  globalViewMode = 'investor' as GlobalViewMode
 }) => {
   const [activeNavId, setActiveNavId] = useState<string | null>(null);
+  const [summaryDownloaded, setSummaryDownloaded] = useState<boolean>(false);
+
+  const handleDownloadOneClickSummary = () => {
+    downloadSsotExecutiveSummary(currency, globalViewMode);
+    setSummaryDownloaded(true);
+    setTimeout(() => setSummaryDownloaded(false), 3000);
+  };
 
   const heroNavPills = [
     {
@@ -214,6 +224,30 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                   </span>
                 </div>
                 <ArPreviewButton sectionId="hero" sectionTitle="Executive Briefing" modelPreset="fusion-core" subtitle="Spenta Intelligent Reality" />
+                <button
+                  id="hero-one-click-summary-btn"
+                  type="button"
+                  onClick={handleDownloadOneClickSummary}
+                  title="Aggregate all 14 SSOT sections into an Executive Summary (.txt) file"
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-mono font-bold transition-all border cursor-pointer shadow-lg ${
+                    summaryDownloaded
+                      ? 'bg-emerald-950/90 text-emerald-300 border-emerald-400 shadow-emerald-500/20'
+                      : 'bg-slate-900/90 hover:bg-slate-800 text-cyan-300 hover:text-cyan-200 border-cyan-500/40 hover:border-cyan-400 shadow-cyan-950/30'
+                  }`}
+                >
+                  {summaryDownloaded ? (
+                    <>
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                      <span>SSOT Summary Saved</span>
+                    </>
+                  ) : (
+                    <>
+                      <FileText className="w-3.5 h-3.5 text-cyan-400" />
+                      <span>One-Click Summary</span>
+                      <Download className="w-3 h-3 text-cyan-400/80" />
+                    </>
+                  )}
+                </button>
               </div>
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white font-display leading-[1.1]">
                 {globalViewMode === 'investor' ? (

@@ -894,7 +894,7 @@ export const UnitEconomicsSection: React.FC<UnitEconomicsSectionProps> = ({
                   <span>{currency} Normalized</span>
                 </div>
                 <div className="h-48 sm:h-52 w-full">
-                  <ResponsiveContainer width="100%" height="100%">
+                  <ResponsiveContainer width="100%" height="100%" minWidth={100} minHeight={160}>
                     <BarChart data={tierWaterfallData} margin={{ top: 10, right: 10, left: -15, bottom: 0 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" opacity={0.6} />
                       <XAxis dataKey="name" stroke="#64748b" fontSize={10} fontFamily="JetBrains Mono" />
@@ -1184,7 +1184,7 @@ export const UnitEconomicsSection: React.FC<UnitEconomicsSectionProps> = ({
                   </div>
                   <div className="mt-2 h-40 w-full border-t border-b border-slate-800/50 py-4">
                     {/* Recharts Correlation Graph */}
-                    <ResponsiveContainer width="100%" height="100%">
+                    <ResponsiveContainer width="100%" height="100%" minWidth={100} minHeight={110}>
                       <ComposedChart data={activeAnomaly.sparkline.map((val, i) => ({
                         time: `T-${7-i}`,
                         variance: anomalyViewMode === 'projected' ? val * (scenario === 'aggressive' ? 1.3 : 1.1) : val,
@@ -1208,9 +1208,10 @@ export const UnitEconomicsSection: React.FC<UnitEconomicsSectionProps> = ({
                   </div>
                   
                   {/* Scatter Plot for Risk Factor vs Throughput */}
-                  <div className="mt-4 h-40 w-full border-b border-slate-800/50 pb-4">
-                    <div className="text-xs font-mono text-slate-400 mb-2">THROUGHPUT VS RISK INTENSITY (SCATTER)</div>
-                    <ResponsiveContainer width="100%" height="100%">
+                  <div className="mt-4 h-44 w-full border-b border-slate-800/50 pb-4 flex flex-col">
+                    <div className="text-xs font-mono text-slate-400 mb-2 shrink-0">THROUGHPUT VS RISK INTENSITY (SCATTER)</div>
+                    <div className="flex-1 min-h-[120px] w-full">
+                      <ResponsiveContainer width="100%" height="100%" minWidth={100} minHeight={110}>
                       <ScatterChart margin={{ top: 10, right: 10, bottom: 10, left: -20 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
                         <XAxis type="number" dataKey="intensity" name="Intensity" stroke="#475569" fontSize={10} tickLine={false} axisLine={false} />
@@ -1228,6 +1229,7 @@ export const UnitEconomicsSection: React.FC<UnitEconomicsSectionProps> = ({
                           }))} fill={activeAnomaly.severity === 'high' ? '#f43f5e' : activeAnomaly.severity === 'medium' ? '#f59e0b' : '#10b981'} fillOpacity={0.6} />
                       </ScatterChart>
                     </ResponsiveContainer>
+                    </div>
                   </div>
 
                   <div className="text-[10px] font-mono text-slate-500 text-right mt-1">

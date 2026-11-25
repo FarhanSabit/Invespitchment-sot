@@ -7,10 +7,12 @@ import {
   FileText, 
   ArrowUp,
   Sparkles,
-  Mail
+  Mail,
+  Printer
 } from 'lucide-react';
 import { FeedbackWidget } from './FeedbackWidget';
 import { SpentaLogo } from './SpentaLogo';
+import { triggerBriefingPrint } from '../utils/printBriefing';
 
 interface FooterProps {
   onOpenPitchDeck: () => void;
@@ -114,6 +116,16 @@ export const Footer: React.FC<FooterProps> = ({
                   <span>Direct Inquiry</span>
                 </button>
               )}
+
+              <button
+                type="button"
+                onClick={triggerBriefingPrint}
+                className="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 text-xs font-mono flex items-center gap-1.5 transition-all cursor-pointer"
+                title="Print Institutional Briefing (Desktop Recommended)"
+              >
+                <Printer className="w-3.5 h-3.5 text-cyan-400" />
+                <span>Print Briefing</span>
+              </button>
             </div>
           </div>
 

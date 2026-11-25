@@ -20,12 +20,14 @@ import {
   CheckCircle2, 
   GitBranch, 
   Users,
-  LineChart
+  LineChart,
+  Printer
 } from 'lucide-react';
 
 import { GlobalViewMode } from '../App';
 import { SpentaLogo } from './SpentaLogo';
 import { GlobalTableOfContents } from './GlobalTableOfContents';
+import { triggerBriefingPrint } from '../utils/printBriefing';
 
 interface NavbarProps {
   currency: Currency;
@@ -216,6 +218,18 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </button>
               )}
 
+              {/* Print Briefing Button */}
+              <button
+                type="button"
+                onClick={triggerBriefingPrint}
+                id="nav-print-briefing-btn"
+                className="hidden xl:flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-mono bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-cyan-300 border border-slate-700 hover:border-cyan-500/40 transition-all cursor-pointer"
+                title="Print Institutional Investor Briefing (Desktop Recommended)"
+              >
+                <Printer className="w-3.5 h-3.5 text-cyan-400" />
+                <span className="text-[11px]">Print</span>
+              </button>
+
               {/* Data Room Button */}
               <button
                 onClick={onOpenDataRoom}
@@ -282,6 +296,17 @@ export const Navbar: React.FC<NavbarProps> = ({
               >
                 <Download className="w-4 h-4 text-cyan-400" />
                 Download Full Briefing (PDF)
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  triggerBriefingPrint();
+                }}
+                className="w-full py-2.5 text-xs font-semibold bg-slate-900 text-slate-200 border border-slate-700 rounded-xl flex items-center justify-center gap-2"
+              >
+                <Printer className="w-4 h-4 text-cyan-400" />
+                Print Briefing (Desktop Recommended)
               </button>
               <button
                 onClick={() => {

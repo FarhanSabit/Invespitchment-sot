@@ -48,21 +48,50 @@ Instructions:
 - Emphasize how Spenta's dual-shore arbitrage, modular 6-layer fusion architecture, and strict margin governance (${grossMargin}% gross / ${netMargin}% net) create defensible capital efficiency and 5-year compounding ROI under this specific scenario.
 - Do not use markdown headers or bullet points—return plain paragraph text only.`;
 
-      const response = await ai.models.generateContent({
-        model: 'gemini-4-hydrogen',
-        contents: prompt,
-        config: {
-          systemInstruction: 'You are an institutional venture capital partner and enterprise financial analyst writing a crisp, authoritative one-paragraph investment thesis for Spenta XR & Physical AI.',
-          thinkingConfig: { thinkingLevel: ThinkingLevel.LOW }
-        }
-      });
+      const systemInstruction = 'You are an institutional venture capital partner and enterprise financial analyst writing a crisp, authoritative one-paragraph investment thesis for Spenta XR & Physical AI.';
+      const candidateModels: Array<{ model: string; useThinking: boolean }> = [
+        { model: 'gemini-4-hydrogen', useThinking: true },
+        { model: 'gemini-3.1-flash-lite', useThinking: false },
+      ];
 
-      const summaryText = response.text?.trim() || '';
+      let lastError: any = null;
+      let summaryText = '';
+
+      for (let i = 0; i < candidateModels.length; i++) {
+        const candidate = candidateModels[i];
+        try {
+          const response = await ai.models.generateContent({
+            model: candidate.model,
+            contents: prompt,
+            config: {
+              systemInstruction,
+              ...(candidate.useThinking ? { thinkingConfig: { thinkingLevel: ThinkingLevel.LOW } } : {}),
+            },
+          });
+          summaryText = response.text?.trim() || '';
+          if (summaryText) break;
+        } catch (err: any) {
+          lastError = err;
+          const status = err?.status || err?.code;
+          const isTransient = status === 503 || status === 429 || String(err?.message || '').includes('503');
+          if (isTransient && i < candidateModels.length - 1) {
+            await new Promise((resolve) => setTimeout(resolve, 350));
+            continue;
+          }
+          throw err;
+        }
+      }
+
+      if (!summaryText && lastError) {
+        throw lastError;
+      }
+
       return res.json({ summary: summaryText });
     } catch (error: any) {
-      console.error('Gemini API Error in /api/financial-summary:', error);
-      return res.status(error?.status || 500).json({
-        error: error?.message || 'Failed to generate AI financial summary.'
+      const status = typeof error?.status === 'number' ? error.status : 500;
+      console.warn(`[/api/financial-summary] Upstream Gemini status ${status}`);
+      return res.status(status).json({
+        error: 'The AI summary service is temporarily experiencing high demand. Please click Regenerate in a moment.'
       });
     }
   });

@@ -214,7 +214,7 @@ export const MarketShiftSection: React.FC = () => {
             
             {/* Chart Area (7 cols) */}
             <div className="lg:col-span-7 h-64 sm:h-72">
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height="100%" minWidth={100} minHeight={220}>
                 {activeTamTab === 'pie' ? (
                   <PieChart>
                     <Pie
