@@ -131,24 +131,24 @@ export const Navbar: React.FC<NavbarProps> = ({
           : 'bg-transparent py-3.5'
       }`}
     >
-      <div className="max-w-[1480px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between gap-2 lg:gap-4 min-w-0">
+      <div className="max-w-[1640px] mx-auto px-3 sm:px-5 lg:px-6">
+        <div className="flex items-center justify-between gap-2 lg:gap-3 min-w-0">
           
           {/* Official Brand Logo */}
           <a href="#" className="flex items-center gap-2 group focus:outline-none shrink-0 whitespace-nowrap">
             <SpentaLogo size="sm" />
-            <span className="hidden md:inline-block px-1.5 py-0.5 rounded bg-cyan-950/80 border border-cyan-500/30 text-[9px] font-mono font-bold text-cyan-300 tracking-wider whitespace-nowrap shrink-0">
+            <span className="hidden xl:inline-block px-1.5 py-0.5 rounded bg-cyan-950/80 border border-cyan-500/30 text-[9px] font-mono font-bold text-cyan-300 tracking-wider whitespace-nowrap shrink-0">
               XR & AI
             </span>
           </a>
 
-          {/* Desktop Nav Links (2xl+ or xl when concise) */}
-          <nav className="hidden xl:flex items-center gap-0.5 bg-slate-900/60 p-1 rounded-lg border border-slate-800 backdrop-blur-md min-w-0">
+          {/* Primary Navigation Links (Single-line from 1024px / lg upward) */}
+          <nav className="hidden lg:flex items-center gap-0.5 bg-slate-900/60 p-1 rounded-lg border border-slate-800 backdrop-blur-md min-w-0">
             {navLinks.map((link) => (
               <a
                 key={link.href}
                 href={link.href}
-                className="px-2 py-1 text-[11px] font-mono text-slate-400 hover:text-cyan-300 hover:bg-slate-800 rounded transition-all whitespace-nowrap shrink-0"
+                className="px-1.5 xl:px-2 py-1 text-[10.5px] xl:text-[11px] font-mono text-slate-400 hover:text-cyan-300 hover:bg-slate-800 rounded transition-all whitespace-nowrap shrink-0"
               >
                 {link.label}
               </a>
@@ -156,16 +156,16 @@ export const Navbar: React.FC<NavbarProps> = ({
           </nav>
 
           {/* Top-Right Action & Navigation Controls */}
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-1.5 xl:gap-2 shrink-0">
             {/* Desktop Action Buttons */}
             <div className="hidden sm:flex items-center gap-1.5 xl:gap-2">
 
-              {/* Inline Secondary Controls (Visible at 2xl+ where horizontal space is ample) */}
+              {/* Global View Mode Toggle (Inline >= 1360px, inside Tools < 1360px) */}
               {onGlobalViewModeChange && (
-                <div className="hidden 2xl:flex items-center bg-slate-900 border border-slate-700 rounded-md p-0.5 shrink-0">
+                <div className="hidden min-[1360px]:flex items-center bg-slate-900 border border-slate-700 rounded-md p-0.5 shrink-0">
                   <button
                     onClick={() => onGlobalViewModeChange('investor')}
-                    className={`px-2.5 py-1 text-[10px] font-mono font-bold rounded-sm transition-all whitespace-nowrap shrink-0 ${
+                    className={`px-2 py-1 text-[10px] font-mono font-bold rounded-sm transition-all whitespace-nowrap shrink-0 ${
                       globalViewMode === 'investor' 
                         ? 'bg-cyan-500/20 text-cyan-400 shadow-sm' 
                         : 'text-slate-500 hover:text-slate-300'
@@ -175,7 +175,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   </button>
                   <button
                     onClick={() => onGlobalViewModeChange('partner')}
-                    className={`px-2.5 py-1 text-[10px] font-mono font-bold rounded-sm transition-all whitespace-nowrap shrink-0 ${
+                    className={`px-2 py-1 text-[10px] font-mono font-bold rounded-sm transition-all whitespace-nowrap shrink-0 ${
                       globalViewMode === 'partner' 
                         ? 'bg-indigo-500/20 text-indigo-400 shadow-sm' 
                         : 'text-slate-500 hover:text-slate-300'
@@ -186,10 +186,11 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </div>
               )}
 
+              {/* Leave Feedback Button (Inline >= 1680px, inside Tools < 1680px) */}
               {onOpenFeedback && (
                 <button
                   onClick={onOpenFeedback}
-                  className="hidden 2xl:flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-mono bg-slate-900 hover:bg-slate-800 text-emerald-300 border border-emerald-500/30 hover:border-emerald-400 transition-all cursor-pointer whitespace-nowrap shrink-0"
+                  className="hidden min-[1680px]:flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-mono bg-slate-900 hover:bg-slate-800 text-emerald-300 border border-emerald-500/30 hover:border-emerald-400 transition-all cursor-pointer whitespace-nowrap shrink-0"
                 >
                   <span className="text-[11px]">Leave Feedback</span>
                 </button>
@@ -200,7 +201,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 onClick={handleDownloadPdf}
                 disabled={isGeneratingPdf}
                 id="nav-download-briefing-btn"
-                className={`flex items-center gap-1.5 px-2.5 lg:px-3 py-1.5 rounded-md text-xs font-mono transition-all border cursor-pointer whitespace-nowrap shrink-0 ${
+                className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-mono transition-all border cursor-pointer whitespace-nowrap shrink-0 ${
                   pdfSuccess 
                     ? 'bg-emerald-950/80 border-emerald-500 text-emerald-300'
                     : 'bg-slate-900 hover:bg-slate-800 text-cyan-300 border-cyan-500/30 hover:border-cyan-400'
@@ -210,37 +211,38 @@ export const Navbar: React.FC<NavbarProps> = ({
                 {isGeneratingPdf ? (
                   <>
                     <span className="w-3 h-3 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin shrink-0" />
-                    <span className="text-[11px]">Compiling PDF...</span>
+                    <span className="text-[11px] hidden xl:inline">Compiling PDF...</span>
                   </>
                 ) : pdfSuccess ? (
                   <>
                     <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                    <span className="text-[11px]">Briefing Saved</span>
+                    <span className="text-[11px] hidden xl:inline">Briefing Saved</span>
                   </>
                 ) : (
                   <>
                     <Download className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
-                    <span className="text-[11px] font-semibold">Download Briefing</span>
+                    <span className="text-[11px] font-semibold lg:hidden xl:inline">Download Briefing</span>
+                    <span className="text-[11px] font-semibold hidden lg:inline xl:hidden">PDF</span>
                   </>
                 )}
               </button>
 
-              {/* Presentation Pitch Deck Button (Inline at 2xl+, inside Tools menu below 2xl) */}
+              {/* Presentation Pitch Deck Button (Inline >= 1360px, inside Tools < 1360px) */}
               <button
                 onClick={onOpenPitchDeck}
                 id="nav-pitch-deck-btn"
-                className="hidden 2xl:flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-mono bg-slate-900 hover:bg-slate-800 text-indigo-300 border border-indigo-500/30 hover:border-indigo-400 transition-all cursor-pointer whitespace-nowrap shrink-0"
+                className="hidden min-[1360px]:flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-mono bg-slate-900 hover:bg-slate-800 text-indigo-300 border border-indigo-500/30 hover:border-indigo-400 transition-all cursor-pointer whitespace-nowrap shrink-0"
               >
                 <Presentation className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
                 <span className="text-[11px]">12-Slide Deck</span>
               </button>
 
-              {/* D3 Intelligence Dashboard Overlay Button (2xl+) */}
+              {/* D3 Intelligence Dashboard Overlay Button (Inline >= 1680px, inside Tools < 1680px) */}
               {onOpenIntelligenceDashboard && (
                 <button
                   onClick={onOpenIntelligenceDashboard}
                   id="nav-d3-dashboard-btn"
-                  className="hidden 2xl:flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-mono bg-indigo-950/60 hover:bg-indigo-900/60 text-indigo-300 border border-indigo-500/30 hover:border-indigo-400 transition-all cursor-pointer whitespace-nowrap shrink-0"
+                  className="hidden min-[1680px]:flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-mono bg-indigo-950/60 hover:bg-indigo-900/60 text-indigo-300 border border-indigo-500/30 hover:border-indigo-400 transition-all cursor-pointer whitespace-nowrap shrink-0"
                   title="Launch D3.js 12-Quarter Growth Projections"
                 >
                   <LineChart className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
@@ -248,20 +250,20 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </button>
               )}
 
-              {/* Print Briefing Button (2xl+) */}
+              {/* Print Briefing Button (Inline >= 1680px, inside Tools < 1680px) */}
               <button
                 type="button"
                 onClick={triggerBriefingPrint}
                 id="nav-print-briefing-btn"
-                className="hidden 2xl:flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-mono bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-cyan-300 border border-slate-700 hover:border-cyan-500/40 transition-all cursor-pointer whitespace-nowrap shrink-0"
+                className="hidden min-[1680px]:flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-mono bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-cyan-300 border border-slate-700 hover:border-cyan-500/40 transition-all cursor-pointer whitespace-nowrap shrink-0"
                 title="Print Institutional Investor Briefing (Desktop Recommended)"
               >
                 <Printer className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
                 <span className="text-[11px]">Print</span>
               </button>
 
-              {/* Share Briefing Button (2xl+) */}
-              <div className="hidden 2xl:block shrink-0">
+              {/* Share Briefing Button (Inline >= 1680px, inside Tools < 1680px) */}
+              <div className="hidden min-[1680px]:block shrink-0">
                 <ShareBriefingButton
                   currency={currency}
                   persona={persona}
@@ -271,10 +273,11 @@ export const Navbar: React.FC<NavbarProps> = ({
                 />
               </div>
 
-              {/* Grouped Secondary Tools Menu (Visible sm through xl — prevents crowding below 2xl) */}
-              <div ref={toolsMenuRef} className="relative 2xl:hidden shrink-0">
+              {/* Secondary 'Tools' Overflow Menu (Constrained viewports including 1024px–1360px & up to 1679px) */}
+              <div ref={toolsMenuRef} className="relative min-[1680px]:hidden shrink-0">
                 <button
                   type="button"
+                  id="nav-tools-overflow-btn"
                   onClick={() => setIsToolsMenuOpen((prev) => !prev)}
                   aria-expanded={isToolsMenuOpen}
                   aria-haspopup="true"
@@ -292,7 +295,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 {isToolsMenuOpen && (
                   <div className="absolute right-0 mt-2 w-64 bg-slate-950/95 backdrop-blur-2xl border border-slate-800 rounded-xl p-3 shadow-2xl z-[60] space-y-2.5">
                     {onGlobalViewModeChange && (
-                      <div className="space-y-1">
+                      <div className="space-y-1 min-[1360px]:hidden">
                         <div className="text-[10px] font-mono uppercase tracking-wider text-slate-500 px-1">
                           Briefing Lens
                         </div>
@@ -323,14 +326,14 @@ export const Navbar: React.FC<NavbarProps> = ({
                       </div>
                     )}
 
-                    <div className="border-t border-slate-800/80 pt-2 space-y-1.5">
+                    <div className="border-t border-slate-800/80 min-[1360px]:border-t-0 pt-2 min-[1360px]:pt-0 space-y-1.5">
                       <button
                         type="button"
                         onClick={() => {
                           setIsToolsMenuOpen(false);
                           onOpenPitchDeck();
                         }}
-                        className="w-full flex items-center gap-2 px-2.5 py-2 rounded-lg text-xs font-mono bg-slate-900 hover:bg-slate-800 text-indigo-300 border border-indigo-500/25 transition-colors cursor-pointer"
+                        className="w-full flex min-[1360px]:hidden items-center gap-2 px-2.5 py-2 rounded-lg text-xs font-mono bg-slate-900 hover:bg-slate-800 text-indigo-300 border border-indigo-500/25 transition-colors cursor-pointer"
                       >
                         <Presentation className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
                         <span>12-Slide Pitch Deck</span>

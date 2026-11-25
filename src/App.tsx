@@ -438,10 +438,16 @@ export default function App() {
       
       <SectionMap comments={comments} />
       <SectionNavigator
+        currency={currency}
+        persona={activePersona}
+        scenario={activeScenario}
+        globalViewMode={globalViewMode}
         onOpenPitchDeck={() => setIsPitchDeckOpen(true)}
         onOpenDataRoom={() => setIsDataRoomOpen(true)}
         onOpenContact={() => handleOpenContact('Direct Leadership Inquiry')}
         onOpenOnboarding={() => setIsOnboardingOpen(true)}
+        onOpenIntelligenceDashboard={() => handleOpenIntelligence('base')}
+        onOpenFeedback={() => setIsFeedbackDrawerOpen(true)}
       />
       <AnomalyWatchToast />
       <VoiceNavigator />

@@ -307,6 +307,8 @@
   .breadcrumb-nav,
   #sidebar-navigation-dock,
   .sidebar-dock,
+  #section-navigator-rail,
+  .section-navigator-rail,
   .floating-sidebar,
   .section-map-overlay,
   .active-track-indicator,
@@ -584,6 +586,6 @@
   #main-content .max-w-7xl,
   #main-footer .max-w-7xl {
     padding-left: 4.25rem;
-    padding-right: 4.25rem;
+    padding-right: 4.5rem;
   }
 }
