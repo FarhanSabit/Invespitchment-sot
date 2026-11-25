@@ -30,6 +30,7 @@ import { MilestonesSection } from './components/MilestonesSection';
 import { ValueExchangeSection } from './components/ValueExchangeSection';
 import { ExecutiveFeedbackDrawer } from './components/ExecutiveFeedbackDrawer';
 import { SectionMap } from './components/SectionMap';
+import { SectionNavigator } from './components/SectionNavigator';
 import { AnomalyWatchToast } from './components/AnomalyWatchToast';
 import { VoiceNavigator } from './components/VoiceNavigator';
 import { MessageSquare, Share2, Sparkles, X } from 'lucide-react';
@@ -445,6 +446,7 @@ export default function App() {
       />
       
       <SectionMap comments={comments} />
+      <SectionNavigator />
       <AnomalyWatchToast />
       <VoiceNavigator />
 

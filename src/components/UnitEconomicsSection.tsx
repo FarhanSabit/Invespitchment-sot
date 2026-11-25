@@ -24,6 +24,7 @@ import { RoiSensitivitySlider } from './RoiSensitivitySlider';
 import { FinancialSummaryGenerator } from './FinancialSummaryGenerator';
 import { RoiScenarioComparator } from './RoiScenarioComparator';
 import { RoiSensitivityHeatmap } from './RoiSensitivityHeatmap';
+import { MonteCarloSimulation } from './MonteCarloSimulation';
 import { InvestmentRisksOverlay, RiskWeights, DEFAULT_BEAR_RISK_WEIGHTS } from './InvestmentRisksOverlay';
 import { QuickNoteTrigger } from './QuickNoteTrigger';
 import { ReadingTimeIndicator } from './ReadingTimeIndicator';
@@ -688,6 +689,11 @@ export const UnitEconomicsSection: React.FC<UnitEconomicsSectionProps> = ({
             initialCac={currentScen.cacPercent}
             initialRdBurn={24000}
           />
+        </div>
+
+        {/* D3.js Monte Carlo Simulation Visualization */}
+        <div id="monte-carlo-simulation" className="scroll-mt-24 mt-8">
+          <MonteCarloSimulation currency={currency} />
         </div>
 
         {/* Anomaly Watch Widget */}
