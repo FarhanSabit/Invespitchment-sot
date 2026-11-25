@@ -36,6 +36,7 @@ import { MessageSquare } from 'lucide-react';
 import { SentimentProvider } from './context/SentimentContext';
 import { ArPreviewProvider } from './context/ArPreviewContext';
 import { ArPreviewModal } from './components/ArPreviewModal';
+import { SectionDivider } from './components/SectionDivider';
 
 export type GlobalViewMode = 'investor' | 'partner';
 
@@ -96,7 +97,8 @@ export default function App() {
     if (count === 0) return null;
     return (
       <div 
-        className="absolute top-10 right-10 z-50 flex items-center justify-center w-10 h-10 rounded-full bg-slate-900 border border-cyan-500/50 text-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.3)] cursor-pointer hover:scale-110 hover:bg-slate-800 transition-all"
+        data-print-hide="true"
+        className="absolute top-10 right-10 z-50 flex items-center justify-center w-10 h-10 rounded-full bg-slate-900 border border-cyan-500/50 text-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.3)] cursor-pointer hover:scale-110 hover:bg-slate-800 transition-all no-print"
         onClick={onClick}
         title="View Feedback for this section"
       >
@@ -209,11 +211,15 @@ export default function App() {
         {/* Real-Time Investor News Ticker */}
         <InvestorNewsTicker />
 
+        <SectionDivider accent="cyan" label="01 // Dual-Engine Model" />
+
         {/* 2. Synergistic Commercial Portfolios: The Dual Engines */}
         <div className="relative">
           <SectionMarker count={getCommentCount('Dual-Engine Model')} onClick={() => setIsFeedbackDrawerOpen(true)} />
           <DualEngineSection />
         </div>
+
+        <SectionDivider accent="indigo" label="02 // 6-Layer Fusion Stack" />
 
         {/* 3. 6-Layer Fusion Architecture Deep Dive */}
         <div className="relative">
@@ -221,8 +227,12 @@ export default function App() {
           <FusionStackSection />
         </div>
 
+        <SectionDivider accent="purple" label="03 // R&D Roadmap" />
+
         {/* 4. R&D Technology Development Timeline & Gantt Roadmap */}
         <RdRoadmapSection />
+
+        <SectionDivider accent="cyan" label="04 // Execution Sprints" />
 
         {/* Major Milestones & Strategic Sprints */}
         <div className="relative">
@@ -230,14 +240,22 @@ export default function App() {
           <MilestonesSection />
         </div>
 
+        <SectionDivider accent="emerald" label="05 // Value Exchange" />
+
         {/* Value Exchange Model */}
         <ValueExchangeSection />
+
+        <SectionDivider accent="cyan" label="06 // Macro Hardware Shift" />
 
         {/* 5. Macro Catalyst: Big Tech Hardware Influx */}
         <MarketShiftSection />
 
+        <SectionDivider accent="indigo" label="07 // Verified Deployments" />
+
         {/* 6. Verified Case Studies & Interactive ROI Calculator */}
         <CaseStudiesSection currency={currency} />
+
+        <SectionDivider accent="emerald" label="08 // Unit Economics" />
 
         {/* 7. Recalibrated 9-Tier Unit Economics (USD & BDT Waterfall) with Financial Scenarios */}
         <div className="relative">
@@ -248,17 +266,27 @@ export default function App() {
           />
         </div>
 
+        <SectionDivider accent="cyan" label="09 // Dual-Shore Sync" />
+
         {/* 8. Interactive Holographic Dual-Shore Globe (San Jose ↔ Dhaka) */}
         <DualShoreGlobeSection onOpenContact={handleOpenContact} />
+
+        <SectionDivider accent="indigo" label="10 // Executive Leadership" />
 
         {/* 9. Executive Leadership & Founding Team */}
         <ExecutiveTeamSection onOpenContact={handleOpenContact} />
 
+        <SectionDivider accent="purple" label="11 // Passive IP Streams" />
+
         {/* 10. Non-Client, Passive & Creator Commerce Streams */}
         <PassiveIPSection currency={currency} />
 
+        <SectionDivider accent="cyan" label="12 // Competitive Moat" />
+
         {/* 11. Real-World Benchmarks & Competitive Moat Matrix */}
         <MoatAndBenchmarksSection />
+
+        <SectionDivider accent="emerald" label="13 // Seed SAFE Terms" />
 
         {/* 12. Seed Round SAFE Terms, Capital Allocation & Milestones */}
         <InvestmentTermsSection

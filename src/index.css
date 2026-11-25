@@ -228,5 +228,272 @@
   animation: node-glow-pulse 4s ease-in-out infinite;
 }
 
+/* SectionDivider Horizontal Sweep & Glowing Center Node Animations */
+@keyframes divider-sweep {
+  0% {
+    transform: translateX(-120%);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.9;
+  }
+  80% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateX(340%);
+    opacity: 0;
+  }
+}
+
+.animate-divider-sweep {
+  animation: divider-sweep 5.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes divider-pulse {
+  0%, 100% {
+    transform: scale(0.92);
+    opacity: 0.45;
+  }
+  50% {
+    transform: scale(1.38);
+    opacity: 0.95;
+  }
+}
+
+.animate-divider-pulse {
+  animation: divider-pulse 3.2s ease-in-out infinite;
+}
+
+/* ==========================================================================
+   INSTITUTIONAL PRINT BRIEFING STYLESHEET (@media print)
+   Hides all modals, drawers, tooltips, and fixed HUD chrome; renders the
+   designated investor briefing sections in a crisp, print-friendly layout.
+   ========================================================================== */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 14mm 12mm;
+  }
+
+  /* Reset root dark theme and dynamic sentiment filters for clean ink output */
+  html,
+  body,
+  #root,
+  #main-content {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    color: #0f172a !important;
+    filter: none !important;
+    overflow: visible !important;
+    height: auto !important;
+    min-height: 0 !important;
+    width: 100% !important;
+    max-width: none !important;
+    box-shadow: none !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Hide ALL UI overlays: modals, drawers, tooltips, fixed chrome, HUD widgets */
+  header,
+  nav,
+  aside,
+  .fixed,
+  .sticky,
+  [role="dialog"],
+  [role="alertdialog"],
+  [role="tooltip"],
+  [aria-modal="true"],
+  [data-print-hide="true"],
+  .no-print,
+  .section-divider,
+  .crt-scanlines,
+  .crt-beam,
+  #investor-news-ticker,
+  #main-footer,
+  button,
+  input[type="range"],
+  canvas {
+    display: none !important;
+  }
+
+  /* Ensure main briefing flow uses clean full-width single-column print layout */
+  #main-content {
+    display: block !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Target designated Investor Briefing sections specifically */
+  #hero,
+  #dual-engines,
+  #fusion-stack,
+  #rd-roadmap,
+  #milestones,
+  #value-exchange,
+  #market-shift,
+  #case-studies,
+  #unit-economics,
+  #dual-shore-globe,
+  #executive-team,
+  #passive-ip,
+  #moat-benchmarks,
+  #investment-terms {
+    display: block !important;
+    position: relative !important;
+    background: #ffffff !important;
+    background-image: none !important;
+    color: #0f172a !important;
+    padding: 18pt 0 !important;
+    margin: 0 0 12pt 0 !important;
+    border-top: none !important;
+    border-bottom: 1pt solid #cbd5e1 !important;
+    min-height: 0 !important;
+    height: auto !important;
+    overflow: visible !important;
+    box-shadow: none !important;
+    break-inside: auto;
+    page-break-inside: auto;
+  }
+
+  /* Start major diligence sections cleanly on new pages */
+  #dual-engines,
+  #fusion-stack,
+  #case-studies,
+  #unit-economics,
+  #moat-benchmarks,
+  #investment-terms {
+    break-before: page;
+    page-break-before: always;
+  }
+
+  /* Normalize nested cards, panels, grids, and tables for crisp legibility */
+  #main-content section *,
+  #main-content div,
+  #main-content article {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    text-shadow: none !important;
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+  }
+
+  #main-content [class*="bg-slate-"],
+  #main-content [class*="bg-[#0"],
+  #main-content [class*="bg-cyan-950"],
+  #main-content [class*="bg-emerald-950"],
+  #main-content [class*="bg-indigo-950"],
+  #main-content [class*="bg-purple-950"],
+  #main-content [class*="bg-amber-950"],
+  #main-content [class*="bg-rose-950"],
+  #main-content .tech-border,
+  #main-content .tech-border-cyan,
+  #main-content .tech-border-emerald,
+  #main-content .tech-border-purple,
+  #main-content .high-density-box {
+    background: #f8fafc !important;
+    background-image: none !important;
+    border-color: #cbd5e1 !important;
+    box-shadow: none !important;
+  }
+
+  /* High-contrast typography for printed briefing documents */
+  #main-content h1,
+  #main-content h2,
+  #main-content h3,
+  #main-content h4,
+  #main-content strong,
+  #main-content [class*="text-white"],
+  #main-content [class*="text-slate-100"],
+  #main-content [class*="text-slate-200"] {
+    color: #020617 !important;
+    -webkit-text-fill-color: #020617 !important;
+  }
+
+  #main-content p,
+  #main-content li,
+  #main-content td,
+  #main-content th,
+  #main-content span,
+  #main-content [class*="text-slate-300"],
+  #main-content [class*="text-slate-400"],
+  #main-content [class*="text-slate-500"] {
+    color: #334155 !important;
+  }
+
+  #main-content [class*="text-cyan-"] {
+    color: #0e7490 !important;
+  }
+
+  #main-content [class*="text-emerald-"] {
+    color: #047857 !important;
+  }
+
+  #main-content [class*="text-indigo-"],
+  #main-content [class*="text-purple-"] {
+    color: #4338ca !important;
+  }
+
+  #main-content [class*="text-amber-"] {
+    color: #b45309 !important;
+  }
+
+  #main-content [class*="text-rose-"] {
+    color: #be123c !important;
+  }
+
+  /* Prevent orphaned headings and split cards/tables/SVG charts across pages */
+  #main-content h1,
+  #main-content h2,
+  #main-content h3,
+  #main-content h4 {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  #main-content table,
+  #main-content tr,
+  #main-content svg,
+  #main-content .service-card-3d,
+  #main-content .hud-corner {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* Remove decorative HUD corner pseudo-elements and 3D gradient border masks */
+  .hud-corner::before,
+  .hud-corner::after,
+  .service-card-3d::before {
+    display: none !important;
+  }
+
+  /* Ensure tables span cleanly with readable borders */
+  #main-content table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    font-size: 9pt !important;
+  }
+
+  #main-content th,
+  #main-content td {
+    border: 0.75pt solid #cbd5e1 !important;
+    padding: 5pt 6pt !important;
+  }
+
+  /* Keep SVG charts (D3/Recharts) & official Spenta logo cleanly visible */
+  #main-content svg {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+
+  /* Remove background grid pattern on print */
+  .bg-grid-pattern,
+  .bg-radial-cyan {
+    background-image: none !important;
+  }
+}
+
 
 

@@ -25,6 +25,7 @@ import {
 
 import { GlobalViewMode } from '../App';
 import { SpentaLogo } from './SpentaLogo';
+import { GlobalTableOfContents } from './GlobalTableOfContents';
 
 interface NavbarProps {
   currency: Currency;
@@ -121,130 +122,136 @@ export const Navbar: React.FC<NavbarProps> = ({
             ))}
           </nav>
 
-          {/* High Density Telemetry Status Badges & Action Buttons */}
-          <div className="hidden sm:flex items-center gap-2">
+          {/* Top-Right Action & Navigation Controls */}
+          <div className="flex items-center gap-2 shrink-0">
+            {/* Desktop Action Buttons */}
+            <div className="hidden sm:flex items-center gap-2">
 
-            {/* Global View Mode Toggle */}
-            {onGlobalViewModeChange && (
-              <div className="hidden lg:flex items-center bg-slate-900 border border-slate-700 rounded-md p-0.5 mr-2">
-                <button
-                  onClick={() => onGlobalViewModeChange('investor')}
-                  className={`px-2.5 py-1 text-[10px] font-mono font-bold rounded-sm transition-all ${
-                    globalViewMode === 'investor' 
-                      ? 'bg-cyan-500/20 text-cyan-400 shadow-sm' 
-                      : 'text-slate-500 hover:text-slate-300'
-                  }`}
-                >
-                  Investor
-                </button>
-                <button
-                  onClick={() => onGlobalViewModeChange('partner')}
-                  className={`px-2.5 py-1 text-[10px] font-mono font-bold rounded-sm transition-all ${
-                    globalViewMode === 'partner' 
-                      ? 'bg-indigo-500/20 text-indigo-400 shadow-sm' 
-                      : 'text-slate-500 hover:text-slate-300'
-                  }`}
-                >
-                  Partner
-                </button>
-              </div>
-            )}
-
-            {/* Executive Feedback Toggle */}
-            {onOpenFeedback && (
-              <button
-                onClick={onOpenFeedback}
-                className="hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-mono bg-slate-900 hover:bg-slate-800 text-emerald-300 border border-emerald-500/30 hover:border-emerald-400 transition-all cursor-pointer mr-2"
-              >
-                <span className="text-[11px]">Leave Feedback</span>
-              </button>
-            )}
-
-            {/* Download Full Briefing Button */}
-            <button
-              onClick={handleDownloadPdf}
-              disabled={isGeneratingPdf}
-              id="nav-download-briefing-btn"
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-mono transition-all border cursor-pointer ${
-                pdfSuccess 
-                  ? 'bg-emerald-950/80 border-emerald-500 text-emerald-300'
-                  : 'bg-slate-900 hover:bg-slate-800 text-cyan-300 border-cyan-500/30 hover:border-cyan-400'
-              }`}
-              title="Download client-side high-fidelity PDF investor briefing"
-            >
-              {isGeneratingPdf ? (
-                <>
-                  <span className="w-3 h-3 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin" />
-                  <span className="text-[11px]">Compiling PDF...</span>
-                </>
-              ) : pdfSuccess ? (
-                <>
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                  <span className="text-[11px]">Briefing Saved</span>
-                </>
-              ) : (
-                <>
-                  <Download className="w-3.5 h-3.5 text-cyan-400" />
-                  <span className="text-[11px] font-semibold">Download Briefing</span>
-                </>
+              {/* Global View Mode Toggle */}
+              {onGlobalViewModeChange && (
+                <div className="hidden lg:flex items-center bg-slate-900 border border-slate-700 rounded-md p-0.5 mr-2">
+                  <button
+                    onClick={() => onGlobalViewModeChange('investor')}
+                    className={`px-2.5 py-1 text-[10px] font-mono font-bold rounded-sm transition-all ${
+                      globalViewMode === 'investor' 
+                        ? 'bg-cyan-500/20 text-cyan-400 shadow-sm' 
+                        : 'text-slate-500 hover:text-slate-300'
+                    }`}
+                  >
+                    Investor
+                  </button>
+                  <button
+                    onClick={() => onGlobalViewModeChange('partner')}
+                    className={`px-2.5 py-1 text-[10px] font-mono font-bold rounded-sm transition-all ${
+                      globalViewMode === 'partner' 
+                        ? 'bg-indigo-500/20 text-indigo-400 shadow-sm' 
+                        : 'text-slate-500 hover:text-slate-300'
+                    }`}
+                  >
+                    Partner
+                  </button>
+                </div>
               )}
-            </button>
 
-            {/* Presentation Pitch Deck Button */}
-            <button
-              onClick={onOpenPitchDeck}
-              id="nav-pitch-deck-btn"
-              className="hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-mono bg-slate-900 hover:bg-slate-800 text-indigo-300 border border-indigo-500/30 hover:border-indigo-400 transition-all cursor-pointer"
-            >
-              <Presentation className="w-3.5 h-3.5 text-indigo-400" />
-              <span className="text-[11px]">12-Slide Deck</span>
-            </button>
+              {/* Executive Feedback Toggle */}
+              {onOpenFeedback && (
+                <button
+                  onClick={onOpenFeedback}
+                  className="hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-mono bg-slate-900 hover:bg-slate-800 text-emerald-300 border border-emerald-500/30 hover:border-emerald-400 transition-all cursor-pointer mr-2"
+                >
+                  <span className="text-[11px]">Leave Feedback</span>
+                </button>
+              )}
 
-            {/* D3 Intelligence Dashboard Overlay Button */}
-            {onOpenIntelligenceDashboard && (
+              {/* Download Full Briefing Button */}
               <button
-                onClick={onOpenIntelligenceDashboard}
-                id="nav-d3-dashboard-btn"
-                className="hidden xl:flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-mono bg-indigo-950/60 hover:bg-indigo-900/60 text-indigo-300 border border-indigo-500/30 hover:border-indigo-400 transition-all cursor-pointer"
-                title="Launch D3.js 12-Quarter Growth Projections"
+                onClick={handleDownloadPdf}
+                disabled={isGeneratingPdf}
+                id="nav-download-briefing-btn"
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-mono transition-all border cursor-pointer ${
+                  pdfSuccess 
+                    ? 'bg-emerald-950/80 border-emerald-500 text-emerald-300'
+                    : 'bg-slate-900 hover:bg-slate-800 text-cyan-300 border-cyan-500/30 hover:border-cyan-400'
+                }`}
+                title="Download client-side high-fidelity PDF investor briefing"
               >
-                <LineChart className="w-3.5 h-3.5 text-indigo-400" />
-                <span className="text-[11px]">D3 Intel</span>
+                {isGeneratingPdf ? (
+                  <>
+                    <span className="w-3 h-3 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin" />
+                    <span className="text-[11px]">Compiling PDF...</span>
+                  </>
+                ) : pdfSuccess ? (
+                  <>
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                    <span className="text-[11px]">Briefing Saved</span>
+                  </>
+                ) : (
+                  <>
+                    <Download className="w-3.5 h-3.5 text-cyan-400" />
+                    <span className="text-[11px] font-semibold">Download Briefing</span>
+                  </>
+                )}
               </button>
-            )}
 
-            {/* Data Room Button */}
-            <button
-              onClick={onOpenDataRoom}
-              id="nav-data-room-btn"
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-md text-xs font-mono font-bold bg-cyan-500 hover:bg-cyan-400 text-slate-950 transition-all shadow-sm cursor-pointer"
-            >
-              <ShieldCheck className="w-3.5 h-3.5" />
-              <span className="text-[11px]">Data Room</span>
-            </button>
-          </div>
+              {/* Presentation Pitch Deck Button */}
+              <button
+                onClick={onOpenPitchDeck}
+                id="nav-pitch-deck-btn"
+                className="hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-mono bg-slate-900 hover:bg-slate-800 text-indigo-300 border border-indigo-500/30 hover:border-indigo-400 transition-all cursor-pointer"
+              >
+                <Presentation className="w-3.5 h-3.5 text-indigo-400" />
+                <span className="text-[11px]">12-Slide Deck</span>
+              </button>
 
-          {/* Mobile Hamburger */}
-          <div className="flex sm:hidden items-center gap-2">
-            <button
-              onClick={handleDownloadPdf}
-              className="p-2 rounded-lg bg-slate-900 border border-cyan-500/30 text-cyan-400"
-              title="Download PDF"
-            >
-              <Download className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => onCurrencyChange(currency === 'USD' ? 'BDT' : 'USD')}
-              className="px-2 py-1 text-[11px] font-mono bg-slate-900 border border-slate-800 text-cyan-400 rounded-lg"
-            >
-              {currency}
-            </button>
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-300"
-            >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </button>
+              {/* D3 Intelligence Dashboard Overlay Button */}
+              {onOpenIntelligenceDashboard && (
+                <button
+                  onClick={onOpenIntelligenceDashboard}
+                  id="nav-d3-dashboard-btn"
+                  className="hidden xl:flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-mono bg-indigo-950/60 hover:bg-indigo-900/60 text-indigo-300 border border-indigo-500/30 hover:border-indigo-400 transition-all cursor-pointer"
+                  title="Launch D3.js 12-Quarter Growth Projections"
+                >
+                  <LineChart className="w-3.5 h-3.5 text-indigo-400" />
+                  <span className="text-[11px]">D3 Intel</span>
+                </button>
+              )}
+
+              {/* Data Room Button */}
+              <button
+                onClick={onOpenDataRoom}
+                id="nav-data-room-btn"
+                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-md text-xs font-mono font-bold bg-cyan-500 hover:bg-cyan-400 text-slate-950 transition-all shadow-sm cursor-pointer"
+              >
+                <ShieldCheck className="w-3.5 h-3.5" />
+                <span className="text-[11px]">Data Room</span>
+              </button>
+            </div>
+
+            {/* Mobile Quick Actions */}
+            <div className="flex sm:hidden items-center gap-2">
+              <button
+                onClick={handleDownloadPdf}
+                className="p-2 rounded-lg bg-slate-900 border border-cyan-500/30 text-cyan-400"
+                title="Download PDF"
+              >
+                <Download className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => onCurrencyChange(currency === 'USD' ? 'BDT' : 'USD')}
+                className="px-2 py-1 text-[11px] font-mono bg-slate-900 border border-slate-800 text-cyan-400 rounded-lg"
+              >
+                {currency}
+              </button>
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-300"
+              >
+                {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              </button>
+            </div>
+
+            {/* Global Table of Contents Flyout Menu (Top-Right Corner) */}
+            <GlobalTableOfContents />
           </div>
 
         </div>
