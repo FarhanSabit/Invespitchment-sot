@@ -533,7 +533,8 @@
   #main-content tr,
   #main-content svg,
   #main-content .service-card-3d,
-  #main-content .hud-corner {
+  #main-content .hud-corner,
+  #hero-executive-summary-table {
     break-inside: avoid;
     page-break-inside: avoid;
   }

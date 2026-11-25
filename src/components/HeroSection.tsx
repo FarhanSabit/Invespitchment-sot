@@ -28,6 +28,10 @@ import { GlobalViewMode } from '../App';
 import { SpentaLogo } from './SpentaLogo';
 import { ArPreviewButton } from './ArPreviewButton';
 import { downloadSsotExecutiveSummary } from '../utils/ssotSummaryGenerator';
+import { ExecutiveSummaryTable } from './ExecutiveSummaryTable';
+import { ShareBriefingButton } from './ShareBriefingButton';
+import { InvestorPersona } from './OnboardingWizardModal';
+import { FinancialScenario } from './UnitEconomicsSection';
 
 interface HeroSectionProps {
   currency: Currency;
@@ -35,6 +39,8 @@ interface HeroSectionProps {
   onOpenDataRoom: () => void;
   onOpenContact?: (interest?: string) => void;
   globalViewMode?: GlobalViewMode;
+  persona?: InvestorPersona | null;
+  scenario?: FinancialScenario;
 }
 
 export const HeroSection: React.FC<HeroSectionProps> = ({
@@ -42,7 +48,9 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   onOpenPitchDeck,
   onOpenDataRoom,
   onOpenContact,
-  globalViewMode = 'investor' as GlobalViewMode
+  globalViewMode = 'investor' as GlobalViewMode,
+  persona,
+  scenario = 'base'
 }) => {
   const [activeNavId, setActiveNavId] = useState<string | null>(null);
   const [summaryDownloaded, setSummaryDownloaded] = useState<boolean>(false);
@@ -224,6 +232,14 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                   </span>
                 </div>
                 <ArPreviewButton sectionId="hero" sectionTitle="Executive Briefing" modelPreset="fusion-core" subtitle="Spenta Intelligent Reality" />
+                <ShareBriefingButton
+                  currency={currency}
+                  persona={persona}
+                  scenario={scenario}
+                  globalViewMode={globalViewMode}
+                  currentSectionId="hero"
+                  variant="hero"
+                />
                 <button
                   id="hero-one-click-summary-btn"
                   type="button"
@@ -478,8 +494,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
             </div>
           </motion.div>
-
         </div>
+
+        {/* Executive Summary Table: Condensed Six-Layer Architecture Overview */}
+        <ExecutiveSummaryTable />
 
       </div>
     </section>

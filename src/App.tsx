@@ -32,11 +32,13 @@ import { ExecutiveFeedbackDrawer } from './components/ExecutiveFeedbackDrawer';
 import { SectionMap } from './components/SectionMap';
 import { AnomalyWatchToast } from './components/AnomalyWatchToast';
 import { VoiceNavigator } from './components/VoiceNavigator';
-import { MessageSquare } from 'lucide-react';
+import { MessageSquare, Share2, Sparkles, X } from 'lucide-react';
 import { SentimentProvider } from './context/SentimentContext';
 import { ArPreviewProvider } from './context/ArPreviewContext';
 import { ArPreviewModal } from './components/ArPreviewModal';
 import { SectionDivider } from './components/SectionDivider';
+import { SectionReveal } from './components/SectionReveal';
+import { personas } from './components/OnboardingWizardModal';
 
 export type GlobalViewMode = 'investor' | 'partner';
 
@@ -54,14 +56,50 @@ export default function App() {
   const [activeScenario, setActiveScenario] = useState<FinancialScenario>('base');
   const [contactInterestArea, setContactInterestArea] = useState<string>('Seed Round SAFE Allocation ($500k @ $4.5M Cap)');
   const [comments, setComments] = useState<FeedbackComment[]>([]);
+  const [restoredSessionNotice, setRestoredSessionNotice] = useState<{
+    sessionId: string;
+    personaTitle?: string;
+    scenario?: string;
+    currency?: string;
+  } | null>(null);
 
-  // Deep linking: Detect ?section=xxx or #xxx in URL on load and scroll into view
+  // Deep linking: Detect ?section=xxx, shared session state (?persona, ?currency, ?scenario, ?sid), or #xxx
   useEffect(() => {
     const handleDeepLink = () => {
       const urlParams = new URLSearchParams(window.location.search);
       const sectionQuery = urlParams.get('section');
       const hashQuery = window.location.hash.replace('#', '');
       const targetId = sectionQuery || hashQuery;
+
+      // Parse shared session parameters if present
+      const personaParam = urlParams.get('persona') as InvestorPersona | null;
+      const currencyParam = urlParams.get('currency') as Currency | null;
+      const scenarioParam = urlParams.get('scenario') as FinancialScenario | null;
+      const viewParam = urlParams.get('view') as GlobalViewMode | null;
+      const sidParam = urlParams.get('sid');
+
+      if (currencyParam === 'USD' || currencyParam === 'BDT') {
+        setCurrency(currencyParam);
+      }
+      if (viewParam === 'investor' || viewParam === 'partner') {
+        setGlobalViewMode(viewParam);
+      }
+      if (scenarioParam && ['base', 'bull', 'bear'].includes(scenarioParam)) {
+        setActiveScenario(scenarioParam);
+      }
+      if (personaParam && ['vc', 'angel', 'strategic', 'sovereign'].includes(personaParam)) {
+        setActivePersona(personaParam);
+      }
+      if (sidParam) {
+        const personaTitle = personaParam && personas[personaParam] ? personas[personaParam].title : undefined;
+        setRestoredSessionNotice({
+          sessionId: sidParam,
+          personaTitle,
+          scenario: scenarioParam ? `${scenarioParam.toUpperCase()} Scenario` : undefined,
+          currency: currencyParam || undefined,
+        });
+        setTimeout(() => setRestoredSessionNotice(null), 8000);
+      }
 
       if (targetId) {
         // Small delay to allow component rendering and loading screen transition
@@ -186,6 +224,8 @@ export default function App() {
         globalViewMode={globalViewMode}
         onGlobalViewModeChange={setGlobalViewMode}
         onOpenFeedback={() => setIsFeedbackDrawerOpen(true)}
+        persona={activePersona}
+        scenario={activeScenario}
       />
 
       {/* Floating Spatial Sidebar Dock */}
@@ -206,6 +246,8 @@ export default function App() {
           onOpenDataRoom={() => setIsDataRoomOpen(true)}
           onOpenContact={handleOpenContact}
           globalViewMode={globalViewMode}
+          persona={activePersona}
+          scenario={activeScenario}
         />
 
         {/* Real-Time Investor News Ticker */}
@@ -214,87 +256,113 @@ export default function App() {
         <SectionDivider accent="cyan" label="01 // Dual-Engine Model" />
 
         {/* 2. Synergistic Commercial Portfolios: The Dual Engines */}
-        <div className="relative">
-          <SectionMarker count={getCommentCount('Dual-Engine Model')} onClick={() => setIsFeedbackDrawerOpen(true)} />
-          <DualEngineSection />
-        </div>
+        <SectionReveal delay={0.05} stagger={0.08}>
+          <div className="relative">
+            <SectionMarker count={getCommentCount('Dual-Engine Model')} onClick={() => setIsFeedbackDrawerOpen(true)} />
+            <DualEngineSection />
+          </div>
+        </SectionReveal>
 
         <SectionDivider accent="indigo" label="02 // 6-Layer Fusion Stack" />
 
         {/* 3. 6-Layer Fusion Architecture Deep Dive */}
-        <div className="relative">
-          <SectionMarker count={getCommentCount('Technical Architecture')} onClick={() => setIsFeedbackDrawerOpen(true)} />
-          <FusionStackSection />
-        </div>
+        <SectionReveal delay={0.05} stagger={0.08}>
+          <div className="relative">
+            <SectionMarker count={getCommentCount('Technical Architecture')} onClick={() => setIsFeedbackDrawerOpen(true)} />
+            <FusionStackSection />
+          </div>
+        </SectionReveal>
 
         <SectionDivider accent="purple" label="03 // R&D Roadmap" />
 
         {/* 4. R&D Technology Development Timeline & Gantt Roadmap */}
-        <RdRoadmapSection />
+        <SectionReveal delay={0.05} stagger={0.08}>
+          <RdRoadmapSection />
+        </SectionReveal>
 
         <SectionDivider accent="cyan" label="04 // Execution Sprints" />
 
         {/* Major Milestones & Strategic Sprints */}
-        <div className="relative">
-          <SectionMarker count={getCommentCount('Milestones & Roadmap')} onClick={() => setIsFeedbackDrawerOpen(true)} />
-          <MilestonesSection />
-        </div>
+        <SectionReveal delay={0.05} stagger={0.08}>
+          <div className="relative">
+            <SectionMarker count={getCommentCount('Milestones & Roadmap')} onClick={() => setIsFeedbackDrawerOpen(true)} />
+            <MilestonesSection />
+          </div>
+        </SectionReveal>
 
         <SectionDivider accent="emerald" label="05 // Value Exchange" />
 
         {/* Value Exchange Model */}
-        <ValueExchangeSection />
+        <SectionReveal delay={0.05} stagger={0.08}>
+          <ValueExchangeSection />
+        </SectionReveal>
 
         <SectionDivider accent="cyan" label="06 // Macro Hardware Shift" />
 
         {/* 5. Macro Catalyst: Big Tech Hardware Influx */}
-        <MarketShiftSection />
+        <SectionReveal delay={0.05} stagger={0.08}>
+          <MarketShiftSection />
+        </SectionReveal>
 
         <SectionDivider accent="indigo" label="07 // Verified Deployments" />
 
         {/* 6. Verified Case Studies & Interactive ROI Calculator */}
-        <CaseStudiesSection currency={currency} />
+        <SectionReveal delay={0.05} stagger={0.08}>
+          <CaseStudiesSection currency={currency} />
+        </SectionReveal>
 
         <SectionDivider accent="emerald" label="08 // Unit Economics" />
 
         {/* 7. Recalibrated 9-Tier Unit Economics (USD & BDT Waterfall) with Financial Scenarios */}
-        <div className="relative">
-          <SectionMarker count={getCommentCount('Financials & Valuation')} onClick={() => setIsFeedbackDrawerOpen(true)} />
-          <UnitEconomicsSection 
-            currency={currency} 
-            onOpenIntelligenceDashboard={handleOpenIntelligence}
-          />
-        </div>
+        <SectionReveal delay={0.05} stagger={0.08}>
+          <div className="relative">
+            <SectionMarker count={getCommentCount('Financials & Valuation')} onClick={() => setIsFeedbackDrawerOpen(true)} />
+            <UnitEconomicsSection 
+              currency={currency} 
+              onOpenIntelligenceDashboard={handleOpenIntelligence}
+            />
+          </div>
+        </SectionReveal>
 
         <SectionDivider accent="cyan" label="09 // Dual-Shore Sync" />
 
         {/* 8. Interactive Holographic Dual-Shore Globe (San Jose ↔ Dhaka) */}
-        <DualShoreGlobeSection onOpenContact={handleOpenContact} />
+        <SectionReveal delay={0.05} stagger={0.08}>
+          <DualShoreGlobeSection onOpenContact={handleOpenContact} />
+        </SectionReveal>
 
         <SectionDivider accent="indigo" label="10 // Executive Leadership" />
 
         {/* 9. Executive Leadership & Founding Team */}
-        <ExecutiveTeamSection onOpenContact={handleOpenContact} />
+        <SectionReveal delay={0.05} stagger={0.08}>
+          <ExecutiveTeamSection onOpenContact={handleOpenContact} />
+        </SectionReveal>
 
         <SectionDivider accent="purple" label="11 // Passive IP Streams" />
 
         {/* 10. Non-Client, Passive & Creator Commerce Streams */}
-        <PassiveIPSection currency={currency} />
+        <SectionReveal delay={0.05} stagger={0.08}>
+          <PassiveIPSection currency={currency} />
+        </SectionReveal>
 
         <SectionDivider accent="cyan" label="12 // Competitive Moat" />
 
         {/* 11. Real-World Benchmarks & Competitive Moat Matrix */}
-        <MoatAndBenchmarksSection />
+        <SectionReveal delay={0.05} stagger={0.08}>
+          <MoatAndBenchmarksSection />
+        </SectionReveal>
 
         <SectionDivider accent="emerald" label="13 // Seed SAFE Terms" />
 
         {/* 12. Seed Round SAFE Terms, Capital Allocation & Milestones */}
-        <InvestmentTermsSection
-          currency={currency}
-          onOpenDataRoom={() => setIsDataRoomOpen(true)}
-          onOpenPitchDeck={() => setIsPitchDeckOpen(true)}
-          onOpenContact={handleOpenContact}
-        />
+        <SectionReveal delay={0.05} stagger={0.08}>
+          <InvestmentTermsSection
+            currency={currency}
+            onOpenDataRoom={() => setIsDataRoomOpen(true)}
+            onOpenPitchDeck={() => setIsPitchDeckOpen(true)}
+            onOpenContact={handleOpenContact}
+          />
+        </SectionReveal>
 
       </main>
 
@@ -375,6 +443,40 @@ export default function App() {
 
       {/* Floating Augmented Reality 3D Spatial Viewer Modal */}
       <ArPreviewModal />
+
+      {/* Restored Shared Briefing Session Notification Toast */}
+      {restoredSessionNotice && (
+        <div 
+          data-print-hide="true"
+          className="fixed bottom-6 right-6 z-50 max-w-sm sm:max-w-md p-4 rounded-xl bg-slate-950/95 border border-cyan-500/50 shadow-2xl backdrop-blur-xl text-slate-100 flex items-start gap-3 no-print"
+        >
+          <div className="p-2 rounded-lg bg-cyan-950 text-cyan-400 shrink-0 mt-0.5 border border-cyan-500/30">
+            <Share2 className="w-4 h-4" />
+          </div>
+          <div className="flex-1 min-w-0 text-xs font-sans">
+            <div className="font-bold text-cyan-300 font-mono flex items-center gap-1.5 text-[11px]">
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>SHARED BRIEFING SESSION RESTORED</span>
+            </div>
+            <p className="text-slate-300 mt-1 leading-snug">
+              {restoredSessionNotice.personaTitle && <span>Track: <strong className="text-white">{restoredSessionNotice.personaTitle}</strong> · </span>}
+              {restoredSessionNotice.scenario && <span>{restoredSessionNotice.scenario} · </span>}
+              {restoredSessionNotice.currency && <span className="font-mono">{restoredSessionNotice.currency}</span>}
+            </p>
+            <div className="text-[10px] font-mono text-slate-400 mt-1 truncate">
+              Token: {restoredSessionNotice.sessionId}
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => setRestoredSessionNotice(null)}
+            className="text-slate-400 hover:text-white p-1 cursor-pointer"
+            aria-label="Dismiss restored session alert"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
     </div>
     </ArPreviewProvider>
   </SentimentProvider>

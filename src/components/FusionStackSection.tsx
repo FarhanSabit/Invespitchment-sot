@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { FUSION_LAYERS } from '../data/mockData';
 import { FusionLayer } from '../types';
@@ -48,6 +48,18 @@ export const FusionStackSection: React.FC = () => {
   const [expandedDocLevel, setExpandedDocLevel] = useState<number | null>(3);
   const [activeInspectorTab, setActiveInspectorTab] = useState<'architecture' | 'endpoints' | 'sdk' | 'compliance'>('endpoints');
   const [copiedPath, setCopiedPath] = useState<string | null>(null);
+
+  useEffect(() => {
+    const handleSelectLayer = (e: Event) => {
+      const customEvent = e as CustomEvent<{ level: number }>;
+      if (customEvent.detail && typeof customEvent.detail.level === 'number') {
+        setSelectedLayerLevel(customEvent.detail.level);
+        setExpandedDocLevel(customEvent.detail.level);
+      }
+    };
+    window.addEventListener('spenta:select-fusion-layer', handleSelectLayer);
+    return () => window.removeEventListener('spenta:select-fusion-layer', handleSelectLayer);
+  }, []);
 
   const selectedLayer = FUSION_LAYERS.find(l => l.level === selectedLayerLevel) || FUSION_LAYERS[0];
   const IconComponent = iconMap[selectedLayer.iconName] || Layers;

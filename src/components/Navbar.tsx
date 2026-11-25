@@ -28,6 +28,9 @@ import { GlobalViewMode } from '../App';
 import { SpentaLogo } from './SpentaLogo';
 import { GlobalTableOfContents } from './GlobalTableOfContents';
 import { triggerBriefingPrint } from '../utils/printBriefing';
+import { ShareBriefingButton } from './ShareBriefingButton';
+import { InvestorPersona } from './OnboardingWizardModal';
+import { FinancialScenario } from './UnitEconomicsSection';
 
 interface NavbarProps {
   currency: Currency;
@@ -39,6 +42,8 @@ interface NavbarProps {
   globalViewMode?: GlobalViewMode;
   onGlobalViewModeChange?: (mode: GlobalViewMode) => void;
   onOpenFeedback?: () => void;
+  persona?: InvestorPersona | null;
+  scenario?: FinancialScenario;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -50,7 +55,9 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenIntelligenceDashboard,
   globalViewMode = 'investor',
   onGlobalViewModeChange,
-  onOpenFeedback
+  onOpenFeedback,
+  persona,
+  scenario = 'base'
 }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -230,6 +237,17 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <span className="text-[11px]">Print</span>
               </button>
 
+              {/* Share Briefing Button */}
+              <div className="hidden sm:block">
+                <ShareBriefingButton
+                  currency={currency}
+                  persona={persona}
+                  scenario={scenario}
+                  globalViewMode={globalViewMode}
+                  variant="nav"
+                />
+              </div>
+
               {/* Data Room Button */}
               <button
                 onClick={onOpenDataRoom}
@@ -308,6 +326,16 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <Printer className="w-4 h-4 text-cyan-400" />
                 Print Briefing (Desktop Recommended)
               </button>
+              <div onClick={() => setMobileMenuOpen(false)} className="w-full">
+                <ShareBriefingButton
+                  currency={currency}
+                  persona={persona}
+                  scenario={scenario}
+                  globalViewMode={globalViewMode}
+                  variant="nav"
+                  className="w-full justify-center py-2.5 text-xs rounded-xl"
+                />
+              </div>
               <button
                 onClick={() => {
                   setMobileMenuOpen(false);
