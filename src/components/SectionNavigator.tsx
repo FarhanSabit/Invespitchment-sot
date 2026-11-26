@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import {
   FileText,
   Settings,
@@ -73,6 +74,14 @@ interface FloatingTooltipState {
   isActiveSection?: boolean;
 }
 
+interface CursorNodeTooltipState {
+  title: string;
+  detail?: string;
+  x: number;
+  y: number;
+  isActiveSection?: boolean;
+}
+
 export const SectionNavigator: React.FC<SectionNavigatorProps> = ({
   currency = 'USD',
   persona = null,
@@ -88,9 +97,12 @@ export const SectionNavigator: React.FC<SectionNavigatorProps> = ({
   const [activeId, setActiveId] = useState<string>('hero');
   const [scrollProgress, setScrollProgress] = useState<number>(0);
   const [tooltip, setTooltip] = useState<FloatingTooltipState | null>(null);
+  const [cursorTooltip, setCursorTooltip] = useState<CursorNodeTooltipState | null>(null);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   const asideRef = useRef<HTMLElement>(null);
+  const scrollCleanupRef = useRef<(() => void) | null>(null);
+  const cursorTooltipTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -115,23 +127,133 @@ export const SectionNavigator: React.FC<SectionNavigatorProps> = ({
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll();
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      scrollCleanupRef.current?.();
+      if (cursorTooltipTimerRef.current !== null) {
+        window.clearTimeout(cursorTooltipTimerRef.current);
+      }
+    };
+  }, []);
+
+  const triggerHeaderPulse = useCallback((sectionEl: HTMLElement) => {
+    const headerEl = sectionEl.querySelector<HTMLElement>('h1, h2') || sectionEl;
+    headerEl.classList.remove('animate-section-header-pulse');
+    // Force reflow so rapid repeat clicks re-trigger the pulse smoothly
+    void headerEl.offsetWidth;
+    headerEl.classList.add('animate-section-header-pulse');
+
+    const cleanupTimer = window.setTimeout(() => {
+      headerEl.classList.remove('animate-section-header-pulse');
+    }, 1250);
+
+    const handleAnimEnd = () => {
+      headerEl.classList.remove('animate-section-header-pulse');
+      window.clearTimeout(cleanupTimer);
+      headerEl.removeEventListener('animationend', handleAnimEnd);
+    };
+    headerEl.addEventListener('animationend', handleAnimEnd, { once: true });
   }, []);
 
   const scrollToSection = (id: string) => {
     setActiveId(id);
     const el = document.getElementById(id);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      el.classList.add('ring-2', 'ring-cyan-400', 'ring-offset-4', 'ring-offset-[#05070B]', 'transition-all', 'duration-1000');
-      setTimeout(() => {
-        el.classList.remove('ring-2', 'ring-cyan-400', 'ring-offset-4', 'ring-offset-[#05070B]');
-      }, 3000);
-    }
+    if (!el) return;
+
+    scrollCleanupRef.current?.();
+
+    const startY = window.scrollY;
+    let pulsed = false;
+    let idleTimer: number | null = null;
+    let maxWaitTimer: number | null = null;
+
+    const completeScrollPulse = () => {
+      if (pulsed) return;
+      pulsed = true;
+      cleanupListeners();
+      triggerHeaderPulse(el);
+    };
+
+    const handleScrollTick = () => {
+      if (idleTimer !== null) window.clearTimeout(idleTimer);
+      idleTimer = window.setTimeout(completeScrollPulse, 140);
+    };
+
+    const handleScrollEnd = () => {
+      completeScrollPulse();
+    };
+
+    const cleanupListeners = () => {
+      window.removeEventListener('scroll', handleScrollTick);
+      window.removeEventListener('scrollend', handleScrollEnd);
+      if (idleTimer !== null) window.clearTimeout(idleTimer);
+      if (maxWaitTimer !== null) window.clearTimeout(maxWaitTimer);
+    };
+
+    scrollCleanupRef.current = cleanupListeners;
+    window.addEventListener('scroll', handleScrollTick, { passive: true });
+    window.addEventListener('scrollend', handleScrollEnd, { once: true });
+
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    // Handle the case where the target section is already aligned and no scroll event fires
+    const targetTop = el.getBoundingClientRect().top;
+    const isAlreadyInView = Math.abs(targetTop) < 72 || Math.abs(window.scrollY - startY) < 2;
+    maxWaitTimer = window.setTimeout(completeScrollPulse, isAlreadyInView ? 180 : 900);
   };
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Helper function that displays a temporary floating tooltip near the cursor for section progress nodes
+  const showCursorNodeTooltip = (
+    e: React.MouseEvent<HTMLElement> | React.FocusEvent<HTMLElement>,
+    sectionTitle: string,
+    options?: {
+      detail?: string;
+      isActiveSection?: boolean;
+    }
+  ) => {
+    if (cursorTooltipTimerRef.current !== null) {
+      window.clearTimeout(cursorTooltipTimerRef.current);
+    }
+
+    let x: number;
+    let y: number;
+
+    if ('clientX' in e && (e.clientX !== 0 || e.clientY !== 0)) {
+      x = e.clientX;
+      y = e.clientY;
+    } else {
+      const rect = e.currentTarget.getBoundingClientRect();
+      x = rect.left;
+      y = rect.top + rect.height / 2;
+    }
+
+    const clampedY = Math.min(Math.max(y, 40), window.innerHeight - 40);
+    const clampedX = Math.max(180, Math.min(x - 16, window.innerWidth - 72));
+
+    setCursorTooltip({
+      title: sectionTitle,
+      detail: options?.detail,
+      x: clampedX,
+      y: clampedY,
+      isActiveSection: options?.isActiveSection,
+    });
+
+    cursorTooltipTimerRef.current = window.setTimeout(() => {
+      setCursorTooltip(null);
+      cursorTooltipTimerRef.current = null;
+    }, 2600);
+  };
+
+  const hideCursorNodeTooltip = () => {
+    if (cursorTooltipTimerRef.current !== null) {
+      window.clearTimeout(cursorTooltipTimerRef.current);
+      cursorTooltipTimerRef.current = null;
+    }
+    setCursorTooltip(null);
   };
 
   const showFloatingTooltip = (
@@ -146,7 +268,8 @@ export const SectionNavigator: React.FC<SectionNavigatorProps> = ({
     if (!asideRef.current) return;
     const asideRect = asideRef.current.getBoundingClientRect();
     const targetRect = e.currentTarget.getBoundingClientRect();
-    const topPx = targetRect.top - asideRect.top + targetRect.height / 2;
+    const rawTopPx = targetRect.top - asideRect.top + targetRect.height / 2;
+    const topPx = Math.min(Math.max(rawTopPx, 20), Math.max(20, asideRect.height - 20));
     setTooltip({
       label,
       detail: options?.detail,
@@ -176,29 +299,28 @@ export const SectionNavigator: React.FC<SectionNavigatorProps> = ({
       <aside
         ref={asideRef}
         id="section-navigator-rail"
-        className="floating-sidebar section-navigator-rail fixed right-2.5 xl:right-4 2xl:right-5 top-1/2 -translate-y-1/2 z-[75] hidden lg:flex flex-col items-center pointer-events-auto w-11 xl:w-12 2xl:w-[52px]"
+        className="floating-sidebar section-navigator-rail fixed right-[max(0.5rem,env(safe-area-inset-right))] lg:right-3 xl:right-4 2xl:right-5 top-[max(4.75rem,calc(env(safe-area-inset-top)+4.5rem))] bottom-[max(8.25rem,calc(env(safe-area-inset-bottom)+8.25rem))] xl:bottom-[max(5.5rem,calc(env(safe-area-inset-bottom)+5.5rem))] z-[75] hidden md:flex flex-col items-center justify-center pointer-events-none w-10 md:w-11 xl:w-12 2xl:w-[52px]"
         aria-label="Unified Section Navigator & Quick Tools Rail"
       >
-        {/* Inner Scroll-Safe Fixed-Width Rail with Adaptive Spacing */}
-        <div className="w-full bg-slate-950/92 backdrop-blur-xl border border-slate-800/90 rounded-2xl py-2 xl:py-2.5 2xl:py-3 px-1 shadow-2xl flex flex-col items-center gap-1 2xl:gap-1.5 max-h-[calc(100vh-8.5rem)] 2xl:max-h-[calc(100vh-7.5rem)] overflow-y-auto overflow-x-hidden">
+        {/* Inner Scroll-Safe Fixed-Width Rail Bounded Strictly Inside Viewport Safe Insets */}
+        <div className="pointer-events-auto w-full bg-slate-950/92 backdrop-blur-xl border border-slate-800/90 rounded-2xl py-2 xl:py-2.5 2xl:py-3 px-1 shadow-2xl flex flex-col items-center gap-1 xl:gap-1.5 max-h-full overflow-y-auto overflow-x-hidden overscroll-contain">
           {/* Tabular Scroll Progress Readout */}
           <div
-            className="text-[9px] font-mono tabular-nums font-bold text-cyan-400 select-none pb-0.5 shrink-0"
+            className="w-full text-center text-[9px] font-mono tabular-nums font-bold leading-none text-cyan-400 select-none pb-0.5 shrink-0"
             title="Briefing Scroll Progress"
           >
             {Math.round(scrollProgress)}%
           </div>
 
-          {/* 1. Section Progress Nodes */}
-          <div className="relative flex flex-col items-center gap-0.5 xl:gap-1 2xl:gap-1.5 shrink-0">
-            {/* Vertical Progress Spine Background */}
-            <div className="absolute top-2 bottom-2 w-0.5 bg-slate-800 left-1/2 -translate-x-1/2 pointer-events-none" />
-
-            {/* Active Progress Fill Spine */}
-            <div
-              className="absolute top-2 w-0.5 bg-gradient-to-b from-cyan-400 via-sky-500 to-teal-400 left-1/2 -translate-x-1/2 pointer-events-none transition-all duration-150"
-              style={{ height: `calc(${scrollProgress}% * 0.92)` }}
-            />
+          {/* 1. Section Progress Nodes (Uniform Dimensions & Spacing Across Active Transitions) */}
+          <div className="relative flex flex-col items-center gap-1 xl:gap-1.5 shrink-0">
+            {/* Vertical Progress Spine Track & Clamped Active Fill */}
+            <div className="absolute top-2.5 bottom-2.5 left-1/2 -translate-x-1/2 w-0.5 bg-slate-800 rounded-full overflow-hidden pointer-events-none">
+              <div
+                className="w-full bg-gradient-to-b from-cyan-400 via-sky-500 to-teal-400 transition-[height] duration-150"
+                style={{ height: `${scrollProgress}%` }}
+              />
+            </div>
 
             {NAV_SECTIONS.map((section) => {
               const isActive = activeId === section.id;
@@ -211,28 +333,34 @@ export const SectionNavigator: React.FC<SectionNavigatorProps> = ({
                   type="button"
                   onClick={() => scrollToSection(section.id)}
                   onMouseEnter={(e) =>
-                    showFloatingTooltip(e, section.name, {
+                    showCursorNodeTooltip(e, section.name, {
                       detail: summaryText,
                       isActiveSection: isActive,
                     })
                   }
-                  onMouseLeave={hideFloatingTooltip}
+                  onMouseMove={(e) =>
+                    showCursorNodeTooltip(e, section.name, {
+                      detail: summaryText,
+                      isActiveSection: isActive,
+                    })
+                  }
+                  onMouseLeave={hideCursorNodeTooltip}
                   onFocus={(e) =>
-                    showFloatingTooltip(e, section.name, {
+                    showCursorNodeTooltip(e, section.name, {
                       detail: summaryText,
                       isActiveSection: isActive,
                     })
                   }
-                  onBlur={hideFloatingTooltip}
+                  onBlur={hideCursorNodeTooltip}
                   aria-label={`Jump to ${section.name}`}
                   aria-current={isActive ? 'location' : undefined}
-                  className={`relative z-10 w-5 h-5 xl:w-6 xl:h-6 2xl:w-6.5 2xl:h-6.5 rounded-full flex items-center justify-center transition-all duration-150 border cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 shrink-0 ${
+                  className={`relative z-10 w-[22px] h-[22px] xl:w-6 xl:h-6 2xl:w-[26px] 2xl:h-[26px] rounded-full flex items-center justify-center transition-[background-color,border-color,color,box-shadow] duration-150 border cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 shrink-0 ${
                     isActive
-                      ? 'bg-cyan-500/25 border-cyan-400 text-cyan-300 shadow-[0_0_10px_rgba(34,211,238,0.65)] scale-110'
+                      ? 'bg-cyan-500/25 border-cyan-400 text-cyan-300 ring-2 ring-cyan-400/30 shadow-[0_0_10px_rgba(34,211,238,0.55)]'
                       : 'bg-slate-900 border-slate-700/90 text-slate-400 hover:border-slate-500 hover:text-slate-100'
                   }`}
                 >
-                  <Icon className={`w-2.5 h-2.5 xl:w-3 xl:h-3 ${isActive ? 'text-cyan-300' : ''}`} />
+                  <Icon className={`w-2.5 h-2.5 xl:w-3 xl:h-3 shrink-0 ${isActive ? 'text-cyan-300' : ''}`} />
                 </button>
               );
             })}
@@ -241,7 +369,7 @@ export const SectionNavigator: React.FC<SectionNavigatorProps> = ({
           <div className="w-6 h-px bg-slate-800 my-0.5 shrink-0" />
 
           {/* 2. Core Utility Buttons (Unified from SidebarDock) */}
-          <div className="flex flex-col items-center gap-0.5 xl:gap-1 2xl:gap-1.5 shrink-0">
+          <div className="flex flex-col items-center gap-1 xl:gap-1.5 shrink-0">
             <InvestorSentimentWidget />
 
             {onOpenOnboarding && (
@@ -397,6 +525,35 @@ export const SectionNavigator: React.FC<SectionNavigatorProps> = ({
           </div>
         )}
       </aside>
+
+      {/* Temporary Cursor-Following Floating Tooltip for Section Progress Nodes */}
+      {typeof document !== 'undefined' &&
+        cursorTooltip &&
+        createPortal(
+          <div
+            role="tooltip"
+            style={{
+              top: `${cursorTooltip.y}px`,
+              left: `${cursorTooltip.x}px`,
+              transform: 'translate(-100%, -50%)',
+            }}
+            className={`fixed px-3 py-1.5 rounded-lg bg-slate-950/95 backdrop-blur-xl border shadow-2xl pointer-events-none z-[95] max-w-xs transition-opacity duration-150 ${
+              cursorTooltip.isActiveSection
+                ? 'border-cyan-500/60 text-cyan-300'
+                : 'border-slate-700 text-slate-200'
+            }`}
+          >
+            <div className="text-[11px] font-mono font-bold whitespace-nowrap">
+              {cursorTooltip.title}
+            </div>
+            {cursorTooltip.detail && (
+              <p className="text-[10px] text-slate-400 font-sans leading-snug mt-0.5 line-clamp-2 whitespace-normal">
+                {cursorTooltip.detail}
+              </p>
+            )}
+          </div>,
+          document.body
+        )}
 
       <ShareBriefingModal
         isOpen={isShareModalOpen}

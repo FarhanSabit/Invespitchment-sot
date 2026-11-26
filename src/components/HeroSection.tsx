@@ -21,7 +21,8 @@ import {
   Zap,
   Calculator,
   FileText,
-  Download
+  Download,
+  Loader2
 } from 'lucide-react';
 
 import { GlobalViewMode } from '../App';
@@ -56,12 +57,21 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   scenario = 'base'
 }) => {
   const [activeNavId, setActiveNavId] = useState<string | null>(null);
+  const [isGeneratingSummary, setIsGeneratingSummary] = useState<boolean>(false);
   const [summaryDownloaded, setSummaryDownloaded] = useState<boolean>(false);
 
   const handleDownloadOneClickSummary = () => {
-    downloadSsotExecutiveSummary(currency, globalViewMode);
-    setSummaryDownloaded(true);
-    setTimeout(() => setSummaryDownloaded(false), 3000);
+    if (isGeneratingSummary) return;
+    setIsGeneratingSummary(true);
+    setTimeout(() => {
+      try {
+        downloadSsotExecutiveSummary(currency, globalViewMode);
+        setSummaryDownloaded(true);
+        setTimeout(() => setSummaryDownloaded(false), 3000);
+      } finally {
+        setIsGeneratingSummary(false);
+      }
+    }, 350);
   };
 
   const heroNavPills = [
@@ -251,14 +261,20 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                   id="hero-one-click-summary-btn"
                   type="button"
                   onClick={handleDownloadOneClickSummary}
+                  disabled={isGeneratingSummary}
                   title="Aggregate all 14 SSOT sections into an Executive Summary (.txt) file"
-                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-mono font-bold transition-all border cursor-pointer shadow-lg ${
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-mono font-bold transition-all border shadow-lg disabled:opacity-60 disabled:cursor-not-allowed ${
                     summaryDownloaded
-                      ? 'bg-emerald-950/90 text-emerald-300 border-emerald-400 shadow-emerald-500/20'
-                      : 'bg-slate-900/90 hover:bg-slate-800 text-cyan-300 hover:text-cyan-200 border-cyan-500/40 hover:border-cyan-400 shadow-cyan-950/30'
+                      ? 'bg-emerald-950/90 text-emerald-300 border-emerald-400 shadow-emerald-500/20 cursor-pointer'
+                      : 'bg-slate-900/90 hover:bg-slate-800 text-cyan-300 hover:text-cyan-200 border-cyan-500/40 hover:border-cyan-400 shadow-cyan-950/30 cursor-pointer'
                   }`}
                 >
-                  {summaryDownloaded ? (
+                  {isGeneratingSummary ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 text-cyan-400 animate-spin" />
+                      <span>Compiling...</span>
+                    </>
+                  ) : summaryDownloaded ? (
                     <>
                       <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
                       <span>SSOT Summary Saved</span>

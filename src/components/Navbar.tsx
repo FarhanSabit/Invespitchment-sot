@@ -23,7 +23,8 @@ import {
   Users,
   LineChart,
   Printer,
-  SlidersHorizontal
+  SlidersHorizontal,
+  Loader2
 } from 'lucide-react';
 
 import { GlobalViewMode } from '../App';
@@ -97,6 +98,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   }, [isToolsMenuOpen]);
 
   const handleDownloadPdf = () => {
+    if (isGeneratingPdf) return;
     setIsGeneratingPdf(true);
     setTimeout(() => {
       try {
@@ -408,11 +410,18 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* Mobile Quick Actions */}
             <div className="flex sm:hidden items-center gap-2 shrink-0">
               <button
+                type="button"
                 onClick={handleDownloadPdf}
-                className="p-2 rounded-lg bg-slate-900 border border-cyan-500/30 text-cyan-400 shrink-0"
+                disabled={isGeneratingPdf}
+                className="p-2 rounded-lg bg-slate-900 border border-cyan-500/30 text-cyan-400 shrink-0 disabled:opacity-60 disabled:cursor-not-allowed"
                 title="Download PDF"
+                aria-label="Download Briefing PDF"
               >
-                <Download className="w-4 h-4" />
+                {isGeneratingPdf ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Download className="w-4 h-4" />
+                )}
               </button>
               <button
                 onClick={() => onCurrencyChange(currency === 'USD' ? 'BDT' : 'USD')}
@@ -453,14 +462,25 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             <div className="pt-2 border-t border-slate-800 flex flex-col gap-2">
               <button
+                type="button"
                 onClick={() => {
                   setMobileMenuOpen(false);
                   handleDownloadPdf();
                 }}
-                className="w-full py-2.5 text-xs font-semibold bg-slate-900 text-cyan-300 border border-cyan-500/40 rounded-xl flex items-center justify-center gap-2"
+                disabled={isGeneratingPdf}
+                className="w-full py-2.5 text-xs font-semibold bg-slate-900 text-cyan-300 border border-cyan-500/40 rounded-xl flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                <Download className="w-4 h-4 text-cyan-400" />
-                Download Full Briefing (PDF)
+                {isGeneratingPdf ? (
+                  <>
+                    <Loader2 className="w-4 h-4 text-cyan-400 animate-spin" />
+                    <span>Compiling PDF Briefing...</span>
+                  </>
+                ) : (
+                  <>
+                    <Download className="w-4 h-4 text-cyan-400" />
+                    <span>Download Full Briefing (PDF)</span>
+                  </>
+                )}
               </button>
               <button
                 type="button"

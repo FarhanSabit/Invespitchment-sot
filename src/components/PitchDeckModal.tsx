@@ -12,7 +12,8 @@ import {
   Presentation,
   FileText,
   Clock,
-  Volume2
+  Volume2,
+  Loader2
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { SpentaLogo } from './SpentaLogo';
@@ -25,6 +26,7 @@ interface PitchDeckModalProps {
 export const PitchDeckModal: React.FC<PitchDeckModalProps> = ({ isOpen, onClose }) => {
   const [currentSlideIndex, setCurrentSlideIndex] = useState<number>(0);
   const [showNotes, setShowNotes] = useState<boolean>(false);
+  const [isExporting, setIsExporting] = useState<boolean>(false);
   const [downloadSuccess, setDownloadSuccess] = useState<boolean>(false);
 
   useEffect(() => {
@@ -47,15 +49,20 @@ export const PitchDeckModal: React.FC<PitchDeckModalProps> = ({ isOpen, onClose 
   const currentSlide = PITCH_DECK_SLIDES[currentSlideIndex];
 
   const handleDownload = () => {
-    setDownloadSuccess(true);
-    confetti({
-      particleCount: 80,
-      spread: 70,
-      origin: { y: 0.6 }
-    });
+    if (isExporting) return;
+    setIsExporting(true);
     setTimeout(() => {
-      setDownloadSuccess(false);
-    }, 4000);
+      setIsExporting(false);
+      setDownloadSuccess(true);
+      confetti({
+        particleCount: 80,
+        spread: 70,
+        origin: { y: 0.6 }
+      });
+      setTimeout(() => {
+        setDownloadSuccess(false);
+      }, 4000);
+    }, 450);
   };
 
   return (
@@ -93,11 +100,23 @@ export const PitchDeckModal: React.FC<PitchDeckModalProps> = ({ isOpen, onClose 
             </button>
 
             <button
+              type="button"
+              id="pitch-deck-export-btn"
               onClick={handleDownload}
-              className="px-3 py-1.5 rounded-lg text-xs font-mono bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/40 flex items-center gap-1.5 transition-all cursor-pointer"
+              disabled={isExporting}
+              className="px-3 py-1.5 rounded-lg text-xs font-mono bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/40 flex items-center gap-1.5 transition-all cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              <Download className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Export .PPTX</span>
+              {isExporting ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  <span className="hidden sm:inline">Exporting...</span>
+                </>
+              ) : (
+                <>
+                  <Download className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Export .PPTX</span>
+                </>
+              )}
             </button>
 
             <button

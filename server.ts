@@ -1,4 +1,5 @@
 import express from 'express';
+import http from 'http';
 import path from 'path';
 import { createServer as createViteServer } from 'vite';
 import { GoogleGenAI, ThinkingLevel } from '@google/genai';
@@ -8,6 +9,7 @@ dotenv.config();
 
 async function startServer() {
   const app = express();
+  const httpServer = http.createServer(app);
   const PORT = 3000;
 
   app.use(express.json());
@@ -97,8 +99,30 @@ Instructions:
   });
 
   if (process.env.NODE_ENV !== 'production') {
+    const hmrDisabled = process.env.DISABLE_HMR === 'true';
     const vite = await createViteServer({
-      server: { middlewareMode: true },
+      server: {
+        middlewareMode: true,
+        allowedHosts: true,
+        port: PORT,
+        hmr: hmrDisabled ? false : { server: httpServer },
+        ...(hmrDisabled ? { ws: false } : {}),
+      },
+      plugins: hmrDisabled
+        ? [
+            {
+              name: 'disable-hmr-client-ws',
+              transform(code, id) {
+                if (id.includes('vite/dist/client/client.mjs')) {
+                  return code.replace(
+                    'transport.connect(createHMRHandler(handleMessage));',
+                    '/* HMR WebSocket disabled via DISABLE_HMR=true */'
+                  );
+                }
+              },
+            },
+          ]
+        : [],
       appType: 'spa',
     });
     app.use(vite.middlewares);
@@ -110,7 +134,7 @@ Instructions:
     });
   }
 
-  app.listen(PORT, '0.0.0.0', () => {
+  httpServer.listen(PORT, '0.0.0.0', () => {
     console.log(`Spenta Full-Stack Server running on http://localhost:${PORT}`);
   });
 }

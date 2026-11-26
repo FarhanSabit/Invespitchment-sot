@@ -45,6 +45,7 @@ const iconMap: Record<string, React.ElementType> = {
 };
 
 export const FusionStackSection: React.FC = () => {
+  const [viewDepth, setViewDepth] = useState<'overview' | 'deep-dive'>('overview');
   const [selectedLayerLevel, setSelectedLayerLevel] = useState<number>(3);
   const [hoveredLayerLevel, setHoveredLayerLevel] = useState<number | null>(null);
   const [expandedDocLevel, setExpandedDocLevel] = useState<number | null>(3);
@@ -57,6 +58,7 @@ export const FusionStackSection: React.FC = () => {
       if (customEvent.detail && typeof customEvent.detail.level === 'number') {
         setSelectedLayerLevel(customEvent.detail.level);
         setExpandedDocLevel(customEvent.detail.level);
+        setViewDepth('deep-dive');
       }
     };
     window.addEventListener('spenta:select-fusion-layer', handleSelectLayer);
@@ -116,21 +118,190 @@ export const FusionStackSection: React.FC = () => {
             Composable Stack: Sensing to Enterprise Action
           </h2>
           <p className="text-base sm:text-lg text-slate-300">
-            A modular, API-first software stack designed for incremental enterprise adoption. Click any layer node below to inspect live API schemas, payload contracts, and SDK code examples.
+            A modular, API-first software stack designed for incremental enterprise adoption. Switch between a concise executive briefing or expand the full API schema and SDK deep-dive.
           </p>
+
+          {/* Expandable/Collapsible Briefing Depth Toggle */}
+          <div className="pt-3 flex flex-col sm:flex-row items-center justify-center gap-3">
+            <div
+              role="tablist"
+              aria-label="Fusion Architecture Detail Depth"
+              className="inline-flex items-center p-1 rounded-xl bg-slate-950/90 border border-slate-800 shadow-lg"
+            >
+              <button
+                type="button"
+                role="tab"
+                id="fusion-view-overview-btn"
+                aria-selected={viewDepth === 'overview'}
+                onClick={() => setViewDepth('overview')}
+                className={`px-3.5 py-2 rounded-lg text-xs font-mono font-bold transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap ${
+                  viewDepth === 'overview'
+                    ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-sm'
+                    : 'text-slate-400 hover:text-white border border-transparent'
+                }`}
+              >
+                <BookOpen className="w-3.5 h-3.5" />
+                <span>High-Level Overview</span>
+              </button>
+              <button
+                type="button"
+                role="tab"
+                id="fusion-view-deepdive-btn"
+                aria-selected={viewDepth === 'deep-dive'}
+                onClick={() => setViewDepth('deep-dive')}
+                className={`px-3.5 py-2 rounded-lg text-xs font-mono font-bold transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap ${
+                  viewDepth === 'deep-dive'
+                    ? 'bg-indigo-500/25 text-indigo-200 border border-indigo-500/50 shadow-sm'
+                    : 'text-slate-400 hover:text-white border border-transparent'
+                }`}
+              >
+                <Terminal className="w-3.5 h-3.5" />
+                <span>Technical Deep-Dive</span>
+              </button>
+            </div>
+          </div>
         </motion.div>
 
-        {/* Interactive Stack Grid: 6 Vertical Layers + Detailed Inspector */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          
-          {/* Left Column: 6 Stack Blocks with Expandable Interactive Tech Doc Nodes (5 cols) */}
-          <motion.div 
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="lg:col-span-5 space-y-3"
-          >
+        <AnimatePresence mode="wait">
+          {viewDepth === 'overview' ? (
+            <motion.div
+              key="fusion-overview"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
+              className="space-y-6"
+            >
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {FUSION_LAYERS.map((layer) => {
+                  const LayerIcon = iconMap[layer.iconName] || Layers;
+                  const isSelected = selectedLayerLevel === layer.level;
+
+                  return (
+                    <div
+                      key={layer.id}
+                      className={`service-card-3d rounded-2xl p-5 border flex flex-col justify-between gap-4 transition-all ${
+                        isSelected
+                          ? 'bg-slate-900/90 border-cyan-500/50 shadow-lg shadow-cyan-500/10'
+                          : 'bg-slate-950/85 border-slate-800/90 hover:border-slate-700'
+                      }`}
+                    >
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-2.5">
+                            <div
+                              className="p-2 rounded-lg border shrink-0"
+                              style={{
+                                color: layer.color,
+                                backgroundColor: `${layer.color}18`,
+                                borderColor: `${layer.color}45`,
+                              }}
+                            >
+                              <LayerIcon className="w-4 h-4" />
+                            </div>
+                            <span
+                              className="text-[10px] font-mono font-bold px-2 py-0.5 rounded border"
+                              style={{
+                                color: layer.color,
+                                backgroundColor: `${layer.color}15`,
+                                borderColor: `${layer.color}40`,
+                              }}
+                            >
+                              LAYER 0{layer.level}
+                            </span>
+                          </div>
+                          {layer.specs && (
+                            <span className="text-[10px] font-mono tabular-nums text-slate-400 bg-slate-900 px-2 py-0.5 rounded border border-slate-800">
+                              {layer.specs.latency}
+                            </span>
+                          )}
+                        </div>
+
+                        <div>
+                          <h3 className="text-base font-bold text-white font-heading">
+                            {layer.title.replace(' Contracts', '')}
+                          </h3>
+                          <p className="text-xs text-slate-300 mt-1.5 leading-relaxed line-clamp-3">
+                            {layer.subtitle}
+                          </p>
+                        </div>
+
+                        <div className="p-2.5 rounded-xl bg-slate-900/75 border border-slate-800/80">
+                          <div className="text-[9px] font-mono uppercase tracking-wider text-emerald-400 font-bold mb-0.5">
+                            Enterprise Value Impact
+                          </div>
+                          <p className="text-[11px] text-slate-300 leading-snug line-clamp-2">
+                            {layer.enterpriseImpact}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between gap-2">
+                        <div className="flex flex-wrap gap-1">
+                          {layer.techStack.slice(0, 2).map((tech) => (
+                            <span
+                              key={tech}
+                              className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-900 border border-slate-800 text-slate-400"
+                            >
+                              {tech}
+                            </span>
+                          ))}
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedLayerLevel(layer.level);
+                            setExpandedDocLevel(layer.level);
+                            setViewDepth('deep-dive');
+                          }}
+                          className="text-[11px] font-mono font-bold text-cyan-300 hover:text-cyan-200 inline-flex items-center gap-1 cursor-pointer shrink-0"
+                        >
+                          <span>Deep-Dive</span>
+                          <ArrowUpRight className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="flex justify-center">
+                <button
+                  type="button"
+                  onClick={() => setViewDepth('deep-dive')}
+                  className="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-cyan-300 border border-cyan-500/40 text-xs font-mono font-bold flex items-center gap-2 transition-all cursor-pointer shadow-lg"
+                >
+                  <Terminal className="w-4 h-4 text-cyan-400" />
+                  <span>Expand Technical Deep-Dive (API Schemas, SDK & Telemetry)</span>
+                  <ChevronDown className="w-4 h-4" />
+                </button>
+              </div>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="fusion-deepdive"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
+              className="space-y-4"
+            >
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => setViewDepth('overview')}
+                  className="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-cyan-300 border border-slate-800 text-xs font-mono flex items-center gap-1.5 transition-colors cursor-pointer"
+                >
+                  <ChevronUp className="w-3.5 h-3.5" />
+                  <span>Collapse to High-Level Overview</span>
+                </button>
+              </div>
+
+              {/* Interactive Stack Grid: 6 Vertical Layers + Detailed Inspector */}
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                
+                {/* Left Column: 6 Stack Blocks with Expandable Interactive Tech Doc Nodes (5 cols) */}
+                <div className="lg:col-span-5 space-y-3">
             <div className="text-xs font-mono text-slate-400 flex items-center justify-between px-1 mb-2">
               <span className="flex items-center gap-1.5">
                 <Activity className="w-3.5 h-3.5 text-cyan-400" />
@@ -286,16 +457,10 @@ export const FusionStackSection: React.FC = () => {
               </span>
               <span>L1 FOUNDATION</span>
             </div>
-          </motion.div>
+          </div>
 
           {/* Right Column: Interactive Deep-Dive Technical Documentation Inspector (7 cols) */}
-          <motion.div 
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="lg:col-span-7"
-          >
+          <div className="lg:col-span-7">
             <div className="service-card-3d bg-slate-900/80 border border-slate-800 p-6 sm:p-7 rounded-2xl shadow-2xl relative">
               
               {/* Top Banner with Layer Badge */}
@@ -640,9 +805,12 @@ export const FusionStackSection: React.FC = () => {
               </div>
 
             </div>
-          </motion.div>
+          </div>
 
         </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
       </div>
     </section>
