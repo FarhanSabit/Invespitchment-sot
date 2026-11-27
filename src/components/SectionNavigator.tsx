@@ -23,6 +23,9 @@ import {
   Link2,
   Check,
   HardDrive,
+  Copy,
+  X,
+  Radio,
 } from 'lucide-react';
 import { InvestorSentimentWidget } from './InvestorSentimentWidget';
 import { triggerBriefingPrint } from '../utils/printBriefing';
@@ -103,6 +106,8 @@ export const SectionNavigator: React.FC<SectionNavigatorProps> = ({
   const [tooltip, setTooltip] = useState<FloatingTooltipState | null>(null);
   const [cursorTooltip, setCursorTooltip] = useState<CursorNodeTooltipState | null>(null);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [isPersistentSessionModalOpen, setIsPersistentSessionModalOpen] = useState(false);
+  const [persistentSessionCopied, setPersistentSessionCopied] = useState(false);
   const [copiedDirectLink, setCopiedDirectLink] = useState(false);
   const { openStorageManager } = useStack();
 
@@ -145,6 +150,17 @@ export const SectionNavigator: React.FC<SectionNavigatorProps> = ({
       }
     };
   }, []);
+
+  useEffect(() => {
+    if (!isPersistentSessionModalOpen) return;
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsPersistentSessionModalOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
+  }, [isPersistentSessionModalOpen]);
 
   const triggerHeaderPulse = useCallback((sectionEl: HTMLElement) => {
     const headerEl = sectionEl.querySelector<HTMLElement>('h1, h2') || sectionEl;
@@ -216,9 +232,7 @@ export const SectionNavigator: React.FC<SectionNavigatorProps> = ({
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleCopyDirectLink = async (
-    e: React.MouseEvent<HTMLButtonElement>
-  ) => {
+  const buildPersistentSessionUrl = useCallback(() => {
     const origin =
       typeof window !== 'undefined' && window.location.origin
         ? window.location.origin
@@ -237,24 +251,38 @@ export const SectionNavigator: React.FC<SectionNavigatorProps> = ({
     params.set('currency', currency);
     params.set('view', globalViewMode);
 
-    const viewUrl = `${origin}${pathname}?${params.toString()}#${activeId}`;
+    return `${origin}${pathname}?${params.toString()}#${activeId}`;
+  }, [activeId, persona, scenario, currency, globalViewMode]);
 
+  const copyTextToClipboard = useCallback(async (text: string) => {
     try {
       if (typeof navigator !== 'undefined' && navigator.clipboard) {
-        await navigator.clipboard.writeText(viewUrl);
+        await navigator.clipboard.writeText(text);
+        return true;
       }
     } catch {
-      // Fallback temporary input copy if clipboard permission is restricted
-      const input = document.createElement('input');
-      input.value = viewUrl;
-      document.body.appendChild(input);
-      input.select();
-      try {
-        document.execCommand('copy');
-      } finally {
-        document.body.removeChild(input);
-      }
+      // Fallback below
     }
+
+    const input = document.createElement('input');
+    input.value = text;
+    document.body.appendChild(input);
+    input.select();
+    try {
+      document.execCommand('copy');
+      return true;
+    } catch {
+      return false;
+    } finally {
+      document.body.removeChild(input);
+    }
+  }, []);
+
+  const handleCopyDirectLink = async (
+    e: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    const viewUrl = buildPersistentSessionUrl();
+    await copyTextToClipboard(viewUrl);
 
     setCopiedDirectLink(true);
     showFloatingTooltip(e, 'Link Copied!', {
@@ -269,6 +297,13 @@ export const SectionNavigator: React.FC<SectionNavigatorProps> = ({
       setCopiedDirectLink(false);
       copyLinkTimerRef.current = null;
     }, 2400);
+  };
+
+  const handleCopyPersistentSessionUrl = async () => {
+    const persistentUrl = buildPersistentSessionUrl();
+    await copyTextToClipboard(persistentUrl);
+    setPersistentSessionCopied(true);
+    window.setTimeout(() => setPersistentSessionCopied(false), 2600);
   };
 
   // Helper function that displays a temporary floating tooltip near the cursor for section progress nodes
@@ -419,10 +454,10 @@ export const SectionNavigator: React.FC<SectionNavigatorProps> = ({
                   onBlur={hideCursorNodeTooltip}
                   aria-label={`Jump to ${section.name}`}
                   aria-current={isActive ? 'location' : undefined}
-                  className={`relative z-10 w-[22px] h-[22px] xl:w-6 xl:h-6 2xl:w-[26px] 2xl:h-[26px] rounded-full flex items-center justify-center transition-[background-color,border-color,color,box-shadow] duration-150 border cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 shrink-0 ${
+                  className={`relative z-10 w-[22px] h-[22px] xl:w-6 xl:h-6 2xl:w-[26px] 2xl:h-[26px] rounded-full flex items-center justify-center transition-[transform,background-color,border-color,color,box-shadow] duration-200 ease-out hover:scale-[1.18] active:scale-95 border cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 shrink-0 ${
                     isActive
-                      ? 'bg-cyan-500/25 border-cyan-400 text-cyan-300 ring-2 ring-cyan-400/30 shadow-[0_0_10px_rgba(34,211,238,0.55)]'
-                      : 'bg-slate-900 border-slate-700/90 text-slate-400 hover:border-slate-500 hover:text-slate-100'
+                      ? 'bg-cyan-500/25 border-cyan-300 text-cyan-200 animate-active-rail-node-glow'
+                      : 'bg-slate-900 border-slate-700/90 text-slate-400 hover:border-cyan-400/60 hover:text-slate-100'
                   }`}
                 >
                   <Icon className={`w-2.5 h-2.5 xl:w-3 xl:h-3 shrink-0 ${isActive ? 'text-cyan-300' : ''}`} />
@@ -635,6 +670,36 @@ export const SectionNavigator: React.FC<SectionNavigatorProps> = ({
               <ChevronUp className="w-3.5 h-3.5" />
             </button>
           </div>
+
+          <div className="w-6 h-px bg-slate-800 my-0.5 shrink-0" />
+
+          {/* Bottom Rail Share Session Action */}
+          <button
+            type="button"
+            id="rail-share-session-btn"
+            onClick={() => {
+              setPersistentSessionCopied(false);
+              setIsPersistentSessionModalOpen(true);
+            }}
+            onMouseEnter={(e) =>
+              showFloatingTooltip(e, 'Share Session', {
+                detail: 'Open persistent URL & Copy to Clipboard dialog',
+                accent: 'cyan',
+              })
+            }
+            onMouseLeave={hideFloatingTooltip}
+            onFocus={(e) =>
+              showFloatingTooltip(e, 'Share Session', {
+                detail: 'Open persistent URL & Copy to Clipboard dialog',
+                accent: 'cyan',
+              })
+            }
+            onBlur={hideFloatingTooltip}
+            className="w-7 h-7 xl:w-8 xl:h-8 rounded-xl bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-500/40 hover:border-cyan-400 text-cyan-300 flex items-center justify-center transition-all hover:scale-105 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 shrink-0 shadow-[0_0_12px_rgba(34,211,238,0.2)]"
+            aria-label="Share Session"
+          >
+            <Radio className="w-3.5 h-3.5" />
+          </button>
         </div>
 
         {/* Non-Clipped Hover/Focus-Only Tooltip Rendered Outside Scroll Container */}
@@ -693,6 +758,139 @@ export const SectionNavigator: React.FC<SectionNavigatorProps> = ({
         globalViewMode={globalViewMode}
         currentSectionId={activeId}
       />
+
+      {/* Persistent URL Share Session Modal */}
+      {typeof document !== 'undefined' &&
+        isPersistentSessionModalOpen &&
+        createPortal(
+          <div
+            id="share-session-modal-backdrop"
+            className="fixed inset-0 z-[94] flex items-center justify-center p-4 sm:p-6 bg-slate-950/85 backdrop-blur-md no-print"
+            onClick={() => setIsPersistentSessionModalOpen(false)}
+          >
+            <div
+              id="share-session-modal"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="share-session-modal-title"
+              onClick={(e) => e.stopPropagation()}
+              className="relative w-full max-w-lg rounded-2xl bg-[#05070B] border border-cyan-500/40 p-6 shadow-2xl shadow-cyan-950/50 text-slate-100 space-y-5 overflow-hidden"
+            >
+              <div className="absolute -top-20 -right-20 w-56 h-56 bg-cyan-600/10 blur-[100px] pointer-events-none" />
+
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <div className="p-2.5 rounded-xl bg-cyan-950/80 border border-cyan-500/40 text-cyan-400">
+                    <Radio className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <div className="text-[10px] font-mono uppercase tracking-wider text-cyan-400">
+                      Persistent Briefing State
+                    </div>
+                    <h2
+                      id="share-session-modal-title"
+                      className="text-lg font-bold text-white font-display"
+                    >
+                      Share Session
+                    </h2>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsPersistentSessionModalOpen(false)}
+                  className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-900 transition-colors cursor-pointer"
+                  aria-label="Close Share Session Modal"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px] font-mono">
+                <div className="p-2.5 rounded-lg bg-slate-900/80 border border-slate-800">
+                  <div className="text-slate-400 text-[10px]">Section</div>
+                  <div className="text-cyan-300 font-semibold truncate">#{activeId}</div>
+                </div>
+                <div className="p-2.5 rounded-lg bg-slate-900/80 border border-slate-800">
+                  <div className="text-slate-400 text-[10px]">Persona</div>
+                  <div className="text-white font-semibold uppercase truncate">
+                    {persona || 'General'}
+                  </div>
+                </div>
+                <div className="p-2.5 rounded-lg bg-slate-900/80 border border-slate-800">
+                  <div className="text-slate-400 text-[10px]">Scenario</div>
+                  <div className="text-purple-300 font-semibold capitalize truncate">
+                    {scenario}
+                  </div>
+                </div>
+                <div className="p-2.5 rounded-lg bg-slate-900/80 border border-slate-800">
+                  <div className="text-slate-400 text-[10px]">Currency</div>
+                  <div className="text-emerald-300 font-semibold truncate">{currency}</div>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label
+                  htmlFor="share-session-persistent-url"
+                  className="block text-xs font-mono text-slate-400 uppercase tracking-wider"
+                >
+                  Current Persistent URL
+                </label>
+                <div className="flex items-center gap-2 p-1.5 rounded-xl bg-slate-900 border border-slate-800 focus-within:border-cyan-500/60">
+                  <input
+                    id="share-session-persistent-url"
+                    type="text"
+                    readOnly
+                    value={buildPersistentSessionUrl()}
+                    className="w-full bg-transparent px-3 py-1.5 text-xs font-mono text-cyan-200 outline-none select-all truncate"
+                  />
+                  <button
+                    type="button"
+                    id="share-session-copy-clipboard-btn"
+                    onClick={() => void handleCopyPersistentSessionUrl()}
+                    className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
+                      persistentSessionCopied
+                        ? 'bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/20'
+                        : 'bg-cyan-500 hover:bg-cyan-400 text-slate-950 shadow-md shadow-cyan-500/20'
+                    }`}
+                  >
+                    {persistentSessionCopied ? (
+                      <>
+                        <Check className="w-3.5 h-3.5" />
+                        <span>Copied!</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-3.5 h-3.5" />
+                        <span>Copy to Clipboard</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between gap-3 pt-3 border-t border-slate-800/80">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsPersistentSessionModalOpen(false);
+                    setIsShareModalOpen(true);
+                  }}
+                  className="text-xs font-mono text-purple-300 hover:text-purple-200 transition-colors cursor-pointer"
+                >
+                  Switch to 7-Day Token & QR Generator →
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsPersistentSessionModalOpen(false)}
+                  className="px-4 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-mono text-slate-200 transition-colors cursor-pointer"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>,
+          document.body
+        )}
     </>
   );
 };
