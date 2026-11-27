@@ -35,6 +35,8 @@ import { VoiceNavigator } from './components/VoiceNavigator';
 import { MessageSquare, Share2, Sparkles, X } from 'lucide-react';
 import { SentimentProvider } from './context/SentimentContext';
 import { ArPreviewProvider } from './context/ArPreviewContext';
+import { StackProvider } from './context/StackProvider';
+import { StorageManager } from './components/StorageManager';
 import { ArPreviewModal } from './components/ArPreviewModal';
 import { SectionDivider } from './components/SectionDivider';
 import { SectionReveal } from './components/SectionReveal';
@@ -86,8 +88,16 @@ export default function App() {
       if (viewParam === 'investor' || viewParam === 'partner') {
         setGlobalViewMode(viewParam);
       }
-      if (scenarioParam && ['base', 'bull', 'bear'].includes(scenarioParam)) {
-        setActiveScenario(scenarioParam);
+      if (scenarioParam) {
+        const normalizedScenario =
+          (scenarioParam as string) === 'bull'
+            ? 'aggressive'
+            : (scenarioParam as string) === 'bear'
+            ? 'conservative'
+            : scenarioParam;
+        if (['conservative', 'base', 'aggressive'].includes(normalizedScenario)) {
+          setActiveScenario(normalizedScenario as FinancialScenario);
+        }
       }
       if (personaParam && ['vc', 'angel', 'strategic', 'sovereign'].includes(personaParam)) {
         setActivePersona(personaParam);
@@ -206,9 +216,44 @@ export default function App() {
     setIsIntelligenceOpen(true);
   };
 
+  const scrollToAndHighlightSection = (sectionId: string) => {
+    setTimeout(() => {
+      const el = document.getElementById(sectionId);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        el.classList.add('ring-2', 'ring-cyan-400', 'ring-offset-4', 'ring-offset-[#05070B]', 'transition-all');
+        setTimeout(() => el.classList.remove('ring-2', 'ring-cyan-400', 'ring-offset-4', 'ring-offset-[#05070B]'), 3000);
+      }
+    }, 150);
+  };
+
   return (
     <SentimentProvider>
       <ArPreviewProvider>
+        <StackProvider
+          workspaceState={{
+            currency,
+            persona: activePersona,
+            scenario: activeScenario,
+            globalViewMode,
+            activeSectionId: 'hero',
+            comments,
+          }}
+          onApplyScenario={(nextScenario, nextCurrency) => {
+            setActiveScenario(nextScenario);
+            setCurrency(nextCurrency);
+            scrollToAndHighlightSection('unit-economics');
+          }}
+          onRestoreSnapshot={(snapshot) => {
+            setCurrency(snapshot.currency);
+            setActivePersona(snapshot.persona);
+            setActiveScenario(snapshot.scenario);
+            setGlobalViewMode(snapshot.globalViewMode);
+            if (snapshot.activeSectionId) {
+              scrollToAndHighlightSection(snapshot.activeSectionId);
+            }
+          }}
+        >
         <div className="min-h-screen bg-[#05070B] text-slate-100 font-sans selection:bg-cyan-500/30 selection:text-cyan-200 relative overflow-x-hidden">
           
           {/* Global Scroll Progress Bar at very top */}
@@ -488,7 +533,10 @@ export default function App() {
           </button>
         </div>
       )}
+      {/* Storage Manager & App Vault Modal */}
+      <StorageManager />
     </div>
+    </StackProvider>
     </ArPreviewProvider>
   </SentimentProvider>
   );

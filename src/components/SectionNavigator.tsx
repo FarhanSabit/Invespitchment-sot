@@ -20,6 +20,9 @@ import {
   Printer,
   Share2,
   MessageSquarePlus,
+  Link2,
+  Check,
+  HardDrive,
 } from 'lucide-react';
 import { InvestorSentimentWidget } from './InvestorSentimentWidget';
 import { triggerBriefingPrint } from '../utils/printBriefing';
@@ -29,6 +32,7 @@ import { InvestorPersona } from './OnboardingWizardModal';
 import { FinancialScenario } from './UnitEconomicsSection';
 import { GlobalViewMode } from '../App';
 import { SECTION_SUMMARIES } from '../data/sectionSummaries';
+import { useStack } from '../context/StackProvider';
 
 interface SectionNode {
   id: string;
@@ -99,10 +103,13 @@ export const SectionNavigator: React.FC<SectionNavigatorProps> = ({
   const [tooltip, setTooltip] = useState<FloatingTooltipState | null>(null);
   const [cursorTooltip, setCursorTooltip] = useState<CursorNodeTooltipState | null>(null);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [copiedDirectLink, setCopiedDirectLink] = useState(false);
+  const { openStorageManager } = useStack();
 
   const asideRef = useRef<HTMLElement>(null);
   const scrollCleanupRef = useRef<(() => void) | null>(null);
   const cursorTooltipTimerRef = useRef<number | null>(null);
+  const copyLinkTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -132,6 +139,9 @@ export const SectionNavigator: React.FC<SectionNavigatorProps> = ({
       scrollCleanupRef.current?.();
       if (cursorTooltipTimerRef.current !== null) {
         window.clearTimeout(cursorTooltipTimerRef.current);
+      }
+      if (copyLinkTimerRef.current !== null) {
+        window.clearTimeout(copyLinkTimerRef.current);
       }
     };
   }, []);
@@ -204,6 +214,61 @@ export const SectionNavigator: React.FC<SectionNavigatorProps> = ({
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleCopyDirectLink = async (
+    e: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    const origin =
+      typeof window !== 'undefined' && window.location.origin
+        ? window.location.origin
+        : 'https://spenta.ai';
+    const pathname =
+      typeof window !== 'undefined' && window.location.pathname
+        ? window.location.pathname
+        : '/';
+
+    const params = new URLSearchParams();
+    params.set('section', activeId);
+    if (persona) {
+      params.set('persona', persona);
+    }
+    params.set('scenario', scenario);
+    params.set('currency', currency);
+    params.set('view', globalViewMode);
+
+    const viewUrl = `${origin}${pathname}?${params.toString()}#${activeId}`;
+
+    try {
+      if (typeof navigator !== 'undefined' && navigator.clipboard) {
+        await navigator.clipboard.writeText(viewUrl);
+      }
+    } catch {
+      // Fallback temporary input copy if clipboard permission is restricted
+      const input = document.createElement('input');
+      input.value = viewUrl;
+      document.body.appendChild(input);
+      input.select();
+      try {
+        document.execCommand('copy');
+      } finally {
+        document.body.removeChild(input);
+      }
+    }
+
+    setCopiedDirectLink(true);
+    showFloatingTooltip(e, 'Link Copied!', {
+      detail: `#${activeId} · ${persona ? persona.toUpperCase() : 'General'} · ${scenario.toUpperCase()}`,
+      accent: 'emerald',
+    });
+
+    if (copyLinkTimerRef.current !== null) {
+      window.clearTimeout(copyLinkTimerRef.current);
+    }
+    copyLinkTimerRef.current = window.setTimeout(() => {
+      setCopiedDirectLink(false);
+      copyLinkTimerRef.current = null;
+    }, 2400);
   };
 
   // Helper function that displays a temporary floating tooltip near the cursor for section progress nodes
@@ -467,6 +532,46 @@ export const SectionNavigator: React.FC<SectionNavigatorProps> = ({
 
             <button
               type="button"
+              id="rail-copy-link-btn"
+              onClick={(e) => void handleCopyDirectLink(e)}
+              onMouseEnter={(e) =>
+                showFloatingTooltip(
+                  e,
+                  copiedDirectLink ? 'Link Copied!' : 'Copy Link',
+                  {
+                    detail: `Copies URL for #${activeId} (${persona ? persona.toUpperCase() : 'General'} · ${scenario.toUpperCase()})`,
+                    accent: copiedDirectLink ? 'emerald' : 'cyan',
+                  }
+                )
+              }
+              onMouseLeave={hideFloatingTooltip}
+              onFocus={(e) =>
+                showFloatingTooltip(
+                  e,
+                  copiedDirectLink ? 'Link Copied!' : 'Copy Link',
+                  {
+                    detail: `Copies URL for #${activeId} (${persona ? persona.toUpperCase() : 'General'} · ${scenario.toUpperCase()})`,
+                    accent: copiedDirectLink ? 'emerald' : 'cyan',
+                  }
+                )
+              }
+              onBlur={hideFloatingTooltip}
+              className={`p-1.5 rounded-lg transition-all border cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 shrink-0 ${
+                copiedDirectLink
+                  ? 'bg-emerald-950/60 border-emerald-500/50 text-emerald-300'
+                  : 'text-cyan-300 hover:bg-slate-900 hover:text-cyan-200 border-transparent hover:border-cyan-500/30'
+              }`}
+              aria-label="Copy Link to Current Briefing View"
+            >
+              {copiedDirectLink ? (
+                <Check className="w-3.5 h-3.5 text-emerald-400" />
+              ) : (
+                <Link2 className="w-3.5 h-3.5" />
+              )}
+            </button>
+
+            <button
+              type="button"
               onClick={() => setIsShareModalOpen(true)}
               onMouseEnter={(e) => showFloatingTooltip(e, 'Share Briefing Link', { accent: 'purple' })}
               onMouseLeave={hideFloatingTooltip}
@@ -476,6 +581,30 @@ export const SectionNavigator: React.FC<SectionNavigatorProps> = ({
               aria-label="Share Briefing Session"
             >
               <Share2 className="w-3.5 h-3.5" />
+            </button>
+
+            <button
+              type="button"
+              id="rail-storage-manager-btn"
+              onClick={() => openStorageManager('vault')}
+              onMouseEnter={(e) =>
+                showFloatingTooltip(e, 'App Vault & Storage', {
+                  detail: 'Saved scenarios, snapshots, storage breakdown & JSON export',
+                  accent: 'indigo',
+                })
+              }
+              onMouseLeave={hideFloatingTooltip}
+              onFocus={(e) =>
+                showFloatingTooltip(e, 'App Vault & Storage', {
+                  detail: 'Saved scenarios, snapshots, storage breakdown & JSON export',
+                  accent: 'indigo',
+                })
+              }
+              onBlur={hideFloatingTooltip}
+              className="p-1.5 rounded-lg text-indigo-300 hover:bg-slate-900 hover:text-indigo-200 transition-all border border-transparent hover:border-indigo-500/30 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 shrink-0"
+              aria-label="Open App Vault and Storage Manager"
+            >
+              <HardDrive className="w-3.5 h-3.5" />
             </button>
 
             {onOpenFeedback && (

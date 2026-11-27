@@ -34,6 +34,9 @@ import { triggerBriefingPrint } from '../utils/printBriefing';
 import { ShareBriefingButton } from './ShareBriefingButton';
 import { InvestorPersona } from './OnboardingWizardModal';
 import { FinancialScenario } from './UnitEconomicsSection';
+import { SyncStatusIndicator } from './SyncStatusIndicator';
+import { useStack } from '../context/StackProvider';
+import { HardDrive } from 'lucide-react';
 
 interface NavbarProps {
   currency: Currency;
@@ -68,6 +71,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const [pdfSuccess, setPdfSuccess] = useState(false);
   const toolsMenuRef = useRef<HTMLDivElement>(null);
+  const { openStorageManager } = useStack();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -161,6 +165,9 @@ export const Navbar: React.FC<NavbarProps> = ({
           <div className="flex items-center gap-1.5 xl:gap-2 shrink-0">
             {/* Desktop Action Buttons */}
             <div className="hidden sm:flex items-center gap-1.5 xl:gap-2">
+
+              {/* LocalPersistenceService Sync Monitor & Force Sync Popover */}
+              <SyncStatusIndicator variant="navbar" />
 
               {/* Global View Mode Toggle (Inline >= 1360px, inside Tools < 1360px) */}
               {onGlobalViewModeChange && (
@@ -373,6 +380,18 @@ export const Navbar: React.FC<NavbarProps> = ({
                         type="button"
                         onClick={() => {
                           setIsToolsMenuOpen(false);
+                          openStorageManager('vault');
+                        }}
+                        className="w-full flex items-center gap-2 px-2.5 py-2 rounded-lg text-xs font-mono bg-slate-900 hover:bg-slate-800 text-cyan-300 border border-cyan-500/25 transition-colors cursor-pointer"
+                      >
+                        <HardDrive className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                        <span>App Vault & Storage</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsToolsMenuOpen(false);
                           triggerBriefingPrint();
                         }}
                         className="w-full flex items-center gap-2 px-2.5 py-2 rounded-lg text-xs font-mono bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700/80 transition-colors cursor-pointer"
@@ -461,6 +480,10 @@ export const Navbar: React.FC<NavbarProps> = ({
             </div>
 
             <div className="pt-2 border-t border-slate-800 flex flex-col gap-2">
+              <SyncStatusIndicator
+                variant="menu"
+                onActionComplete={() => setMobileMenuOpen(false)}
+              />
               <button
                 type="button"
                 onClick={() => {
